@@ -10,7 +10,15 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        buildConfigField "String", "MAJOR_DOMAIN", '"ablecloud"'
+        buildConfigField "long", "MAJOR_DOMAIN_ID", "3L"
     }
+
+    dataBinding {
+        enabled true
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -19,12 +27,26 @@ android {
     }
 }
 
+repositories {
+    flatDir {
+        dirs 'libs'
+    }
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile(name: 'ablecloud-matrix-app-sdk-v2.0.4-alpha-4-g6781732-release', ext: 'aar')
+    compile(name: 'ablecloud-matrix-local-sdk-v2.0.4-alpha-4-g6781732-release', ext: 'aar')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
+
+    compile 'io.reactivex.rxjava2:rxjava:2.0.7'
+    compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
+
+    compile 'com.google.code.gson:gson:2.8.0'
+    compile 'com.squareup.okhttp3:okhttp:3.7.0'
 }
