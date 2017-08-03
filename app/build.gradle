@@ -5,7 +5,7 @@ android {
     buildToolsVersion "25.0.2"
     defaultConfig {
         applicationId "ablecloud.matrix.tool"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
@@ -35,8 +35,8 @@ repositories {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile(name: 'ablecloud-matrix-app-sdk-v2.0.4-alpha-4-g6781732-release', ext: 'aar')
-    compile(name: 'ablecloud-matrix-local-sdk-v2.0.4-alpha-4-g6781732-release', ext: 'aar')
+    compile(name: 'ablecloud-matrix-app-sdk-v2.0.4-alpha-5-g5c50d75-release', ext: 'aar')
+    compile(name: 'ablecloud-matrix-local-sdk-v2.0.4-alpha-5-g5c50d75-release', ext: 'aar')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
@@ -49,4 +49,7 @@ dependencies {
 
     compile 'com.google.code.gson:gson:2.8.0'
     compile 'com.squareup.okhttp3:okhttp:3.7.0'
+
+    compile 'com.jakewharton:butterknife:8.4.0'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
 }

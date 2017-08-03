@@ -1,26 +1,22 @@
 package ablecloud.matrix.tool;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceActivity;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.List;
 
 import ablecloud.matrix.MatrixCallback;
 import ablecloud.matrix.MatrixError;
 import ablecloud.matrix.app.Matrix;
 import ablecloud.matrix.model.User;
 import ablecloud.matrix.util.PreferencesUtils;
-import io.reactivex.Completable;
-import io.reactivex.CompletableEmitter;
-import io.reactivex.CompletableOnSubscribe;
 import io.reactivex.Single;
 import io.reactivex.SingleEmitter;
 import io.reactivex.SingleOnSubscribe;
@@ -28,9 +24,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
-import io.reactivex.subjects.SingleSubject;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends PreferenceActivity {
 
     private static final String MATRIX_ACCOUNT = "ablecloud_matrix_account";
     private AlertDialog loginDialog;
@@ -39,7 +34,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
         loginDialog = new AlertDialog.Builder(this)
                 .setTitle("登录")
                 .setView(R.layout.dialog_login)
@@ -77,6 +71,16 @@ public class MainActivity extends AppCompatActivity {
                         invalidateOptionsMenu();
                     }
                 }).create();
+    }
+
+    @Override
+    public void onBuildHeaders(List<Header> target) {
+        loadHeadersFromResource(R.xml.headers_main, target);
+    }
+
+    @Override
+    protected boolean isValidFragment(String fragmentName) {
+        return true;
     }
 
     @Override
