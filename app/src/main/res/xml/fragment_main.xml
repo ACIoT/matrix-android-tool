@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/device_control">
+        <Preference
+            android:key="cloud_message"
+            android:title="@string/cloud_message" />
+    </PreferenceCategory>
+</PreferenceScreen>

@@ -1,16 +1,18 @@
 package ablecloud.matrix.tool;
 
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Fragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.preference.PreferenceActivity;
+import android.preference.Preference;
+import android.preference.PreferenceFragment;
+import android.preference.PreferenceScreen;
 import android.support.annotation.Nullable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import java.util.List;
 
 import ablecloud.matrix.MatrixCallback;
 import ablecloud.matrix.MatrixError;
@@ -25,7 +27,7 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 
-public class MainActivity extends PreferenceActivity {
+public class MainActivity extends Activity {
 
     private static final String MATRIX_ACCOUNT = "ablecloud_matrix_account";
     private AlertDialog loginDialog;
@@ -34,6 +36,9 @@ public class MainActivity extends PreferenceActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_container);
+        Class<MainFragment> fragmentClass = MainFragment.class;
+        addFragment(fragmentClass);
         loginDialog = new AlertDialog.Builder(this)
                 .setTitle("登录")
                 .setView(R.layout.dialog_login)
@@ -61,7 +66,9 @@ public class MainActivity extends PreferenceActivity {
                             }
                         });
                     }
-                }).create();
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .create();
         logoutDialog = new AlertDialog.Builder(this)
                 .setMessage("确认退出？")
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
@@ -70,17 +77,18 @@ public class MainActivity extends PreferenceActivity {
                         Matrix.accountManager().logout();
                         invalidateOptionsMenu();
                     }
-                }).create();
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .create();
     }
 
-    @Override
-    public void onBuildHeaders(List<Header> target) {
-        loadHeadersFromResource(R.xml.headers_main, target);
-    }
-
-    @Override
-    protected boolean isValidFragment(String fragmentName) {
-        return true;
+    private void addFragment(Class<? extends Fragment> fragmentClass) {
+        try {
+            Fragment fragment = fragmentClass.newInstance();
+            getFragmentManager().beginTransaction().add(R.id.container, fragment).commitAllowingStateLoss();
+        } catch (InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -132,5 +140,24 @@ public class MainActivity extends PreferenceActivity {
                 });
             }
         });
+    }
+
+    public static class MainFragment extends PreferenceFragment {
+
+        @Override
+        public void onCreate(@Nullable Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.fragment_main);
+        }
+
+        @Override
+        public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
+            switch (preference.getKey()) {
+                case "cloud_message":
+                    DeviceControlActivity.cloudMessage(getActivity());
+                    return true;
+            }
+            return super.onPreferenceTreeClick(preferenceScreen, preference);
+        }
     }
 }
