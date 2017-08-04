@@ -19,9 +19,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".DeviceControlActivity"
-            android:screenOrientation="portrait"
-            android:label="@string/device_control">
+            android:name=".FunctionActivity"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />

@@ -5,4 +5,9 @@
             android:key="cloud_message"
             android:title="@string/cloud_message" />
     </PreferenceCategory>
+    <PreferenceCategory android:title="@string/device_management">
+        <Preference
+            android:key="ota_upgrade"
+            android:title="@string/ota_upgrade" />
+    </PreferenceCategory>
 </PreferenceScreen>

@@ -3,4 +3,7 @@
     <string name="device_control">设备控制</string>
     <string name="cloud_message">云端指令</string>
     <string name="send">发送</string>
+    <string name="device_management">设备管理</string>
+    <string name="ota_upgrade">OTA升级</string>
+    <string name="check_version">检查升级</string>
 </resources>

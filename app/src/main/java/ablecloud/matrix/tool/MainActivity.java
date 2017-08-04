@@ -1,8 +1,6 @@
 package ablecloud.matrix.tool;
 
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Fragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.preference.Preference;
@@ -27,7 +25,7 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 
-public class MainActivity extends Activity {
+public class MainActivity extends ContainerActivity {
 
     private static final String MATRIX_ACCOUNT = "ablecloud_matrix_account";
     private AlertDialog loginDialog;
@@ -36,9 +34,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_container);
-        Class<MainFragment> fragmentClass = MainFragment.class;
-        addFragment(fragmentClass);
+        addFragment(MainFragment.class);
         loginDialog = new AlertDialog.Builder(this)
                 .setTitle("登录")
                 .setView(R.layout.dialog_login)
@@ -80,15 +76,6 @@ public class MainActivity extends Activity {
                 })
                 .setNegativeButton(android.R.string.cancel, null)
                 .create();
-    }
-
-    private void addFragment(Class<? extends Fragment> fragmentClass) {
-        try {
-            Fragment fragment = fragmentClass.newInstance();
-            getFragmentManager().beginTransaction().add(R.id.container, fragment).commitAllowingStateLoss();
-        } catch (InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
@@ -154,7 +141,10 @@ public class MainActivity extends Activity {
         public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
             switch (preference.getKey()) {
                 case "cloud_message":
-                    DeviceControlActivity.cloudMessage(getActivity());
+                    FunctionActivity.showFragment(getActivity(), CloudMessageFragment.class.getName());
+                    return true;
+                case "ota_upgrade":
+                    FunctionActivity.showFragment(getActivity(), OtaUpgradeFragment.class.getName());
                     return true;
             }
             return super.onPreferenceTreeClick(preferenceScreen, preference);
