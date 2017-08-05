@@ -35,8 +35,8 @@ repositories {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile(name: 'ablecloud-matrix-app-sdk-v2.0.4-alpha-5-g5c50d75-release', ext: 'aar')
-    compile(name: 'ablecloud-matrix-local-sdk-v2.0.4-alpha-5-g5c50d75-release', ext: 'aar')
+    compile(name: 'ablecloud-matrix-app-sdk-v2.0.4-alpha-7-g86dc3f7-release', ext: 'aar')
+    compile(name: 'ablecloud-matrix-local-sdk-v2.0.4-alpha-7-g86dc3f7-release', ext: 'aar')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })

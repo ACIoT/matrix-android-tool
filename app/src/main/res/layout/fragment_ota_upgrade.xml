@@ -4,11 +4,45 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <Button
-        android:id="@+id/checkVersion"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/check_version" />
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/checkVersionMcu"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/check_version_mcu" />
+
+        <Button
+            android:id="@+id/confirmUpgradeMcu"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/confirm_upgrade_mcu" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/checkVersionWifi"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/check_version_wifi" />
+
+        <Button
+            android:id="@+id/confirmUpgradeWifi"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/confirm_upgrade_wifi" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/log"
