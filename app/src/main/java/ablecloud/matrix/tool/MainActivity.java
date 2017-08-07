@@ -12,11 +12,14 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.sloydev.preferator.Preferator;
+
 import ablecloud.matrix.MatrixCallback;
 import ablecloud.matrix.MatrixError;
 import ablecloud.matrix.app.Matrix;
 import ablecloud.matrix.model.User;
 import ablecloud.matrix.util.PreferencesUtils;
+import io.reactivex.Completable;
 import io.reactivex.Single;
 import io.reactivex.SingleEmitter;
 import io.reactivex.SingleOnSubscribe;
@@ -53,7 +56,6 @@ public class MainActivity extends ContainerActivity {
                             public void accept(@NonNull User user) throws Exception {
                                 PreferencesUtils.putString(MainActivity.this, MATRIX_ACCOUNT, a);
                                 Toast.makeText(MainActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
-
                             }
                         }, new Consumer<Throwable>() {
                             @Override
@@ -80,17 +82,18 @@ public class MainActivity extends ContainerActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.activity_main, menu);
         return true;
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        menu.clear();
+        MenuItem accountItem = menu.findItem(R.id.account);
         boolean login = Matrix.accountManager().isLogin();
         if (!login) {
-            menu.add(0, android.R.id.button1, 0, "登录").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+            accountItem.setTitle(R.string.login);
         } else {
-            menu.add(0, android.R.id.button2, 0, PreferencesUtils.getString(this, MATRIX_ACCOUNT)).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+            accountItem.setTitle(PreferencesUtils.getString(this, MATRIX_ACCOUNT));
         }
         return true;
     }
@@ -98,13 +101,18 @@ public class MainActivity extends ContainerActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.button1:
-                if (!loginDialog.isShowing())
-                    loginDialog.show();
+            case R.id.account:
+                if (Matrix.accountManager().isLogin()) {
+                    if (!logoutDialog.isShowing())
+                        logoutDialog.show();
+                } else {
+                    if (!loginDialog.isShowing()) {
+                        loginDialog.show();
+                    }
+                }
                 return true;
-            case android.R.id.button2:
-                if (!logoutDialog.isShowing())
-                    logoutDialog.show();
+            case R.id.settings:
+                Preferator.launch(this);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -141,15 +149,35 @@ public class MainActivity extends ContainerActivity {
         public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
             switch (preference.getKey()) {
                 case "cloud_message":
-                    FunctionActivity.showFragment(getActivity(), CloudMessageFragment.class.getName());
+                    ensureLogin(new Action() {
+                        @Override
+                        public void run() throws Exception {
+                            FunctionActivity.showFragment(getActivity(), CloudMessageFragment.class.getName());
+                        }
+                    });
                     return true;
                 case "ota_upgrade":
-                    FunctionActivity.showFragment(getActivity(), OtaUpgradeFragment.class.getName());
+                    ensureLogin(new Action() {
+                        @Override
+                        public void run() throws Exception {
+                            FunctionActivity.showFragment(getActivity(), OtaUpgradeFragment.class.getName());
+                        }
+                    });
                     return true;
                 case "local_scan":
                     FunctionActivity.showFragment(getActivity(), LocalScanFragment.class.getName());
             }
             return super.onPreferenceTreeClick(preferenceScreen, preference);
+        }
+
+        private void ensureLogin(Action complete) {
+            Completable completable = Matrix.accountManager().isLogin() ? Completable.complete() : Completable.error(new IllegalStateException("Need login first"));
+            completable.observeOn(AndroidSchedulers.mainThread()).subscribe(complete, new Consumer<Throwable>() {
+                @Override
+                public void accept(@NonNull Throwable throwable) throws Exception {
+                    Toast.makeText(getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
         }
     }
 }

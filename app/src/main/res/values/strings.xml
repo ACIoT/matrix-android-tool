@@ -12,4 +12,6 @@
     <string name="local_scan">局域网发现</string>
     <string name="local_device">局域网设备</string>
     <string name="empty_list">无%1$s，下拉刷新</string>
+    <string name="settings">设置</string>
+    <string name="login">登录</string>
 </resources>

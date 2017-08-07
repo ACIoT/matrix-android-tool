@@ -1,5 +1,6 @@
 package ablecloud.matrix.tool;
 
+import android.app.ActionBar;
 import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
@@ -45,6 +46,9 @@ public class LocalScanFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         adapter = new LocalDeviceAdapter(getActivity());
+        ActionBar actionBar = getActivity().getActionBar();
+        actionBar.setTitle(R.string.local_device);
+        actionBar.setSubtitle(R.string.local_scan);
     }
 
     @Nullable
