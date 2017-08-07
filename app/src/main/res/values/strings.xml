@@ -9,4 +9,7 @@
     <string name="confirm_upgrade_mcu">确认推送升级MCU</string>
     <string name="check_version_wifi">检查升级WIFI</string>
     <string name="confirm_upgrade_wifi">确认推送升级WIFI</string>
+    <string name="local_scan">局域网发现</string>
+    <string name="local_device">局域网设备</string>
+    <string name="empty_list">无%1$s，下拉刷新</string>
 </resources>

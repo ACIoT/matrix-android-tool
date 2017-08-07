@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import ablecloud.matrix.MatrixCallback;
 import ablecloud.matrix.MatrixError;
@@ -16,6 +15,7 @@ import ablecloud.matrix.app.OTAManager;
 import ablecloud.matrix.model.UpgradeRequest;
 import ablecloud.matrix.model.VersionRequest;
 import ablecloud.matrix.model.VersionResponse;
+import ablecloud.matrix.util.UiUtils;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -88,7 +88,7 @@ public class OtaUpgradeFragment extends DeviceFragment {
 
             @Override
             public void error(final MatrixError matrixError) {
-                toast(matrixError.getMessage());
+                UiUtils.toast(getActivity(), matrixError.getMessage());
             }
         });
     }
@@ -99,12 +99,12 @@ public class OtaUpgradeFragment extends DeviceFragment {
         Matrix.otaManager().confirmUpgrade(upgradeRequest, new MatrixCallback<Void>() {
             @Override
             public void success(Void aVoid) {
-                toast("confirmUpgrade success");
+                UiUtils.toast(getActivity(), "confirmUpgrade success");
             }
 
             @Override
             public void error(MatrixError matrixError) {
-                toast("confirmUpgrade error: " + matrixError.getMessage());
+                UiUtils.toast(getActivity(), "confirmUpgrade error: " + matrixError.getMessage());
             }
         });
     }
@@ -120,12 +120,4 @@ public class OtaUpgradeFragment extends DeviceFragment {
         });
     }
 
-    private void toast(final String message) {
-        Completable.complete().observeOn(AndroidSchedulers.mainThread()).subscribe(new Action() {
-            @Override
-            public void run() throws Exception {
-                Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
 }

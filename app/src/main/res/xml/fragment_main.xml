@@ -10,4 +10,10 @@
             android:key="ota_upgrade"
             android:title="@string/ota_upgrade" />
     </PreferenceCategory>
+    <PreferenceCategory />
+    <PreferenceCategory android:title="@string/local_device">
+        <Preference
+            android:key="local_scan"
+            android:title="@string/local_scan" />
+    </PreferenceCategory>
 </PreferenceScreen>

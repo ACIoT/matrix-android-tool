@@ -146,6 +146,8 @@ public class MainActivity extends ContainerActivity {
                 case "ota_upgrade":
                     FunctionActivity.showFragment(getActivity(), OtaUpgradeFragment.class.getName());
                     return true;
+                case "local_scan":
+                    FunctionActivity.showFragment(getActivity(), LocalScanFragment.class.getName());
             }
             return super.onPreferenceTreeClick(preferenceScreen, preference);
         }
