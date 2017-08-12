@@ -148,6 +148,14 @@ public class MainActivity extends ContainerActivity {
         @Override
         public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
             switch (preference.getKey()) {
+                case "device_bind":
+                    ensureLogin(new Action() {
+                        @Override
+                        public void run() throws Exception {
+                            FunctionActivity.showFragment(getActivity(),DeviceBindFragment.class.getName());
+                        }
+                    });
+                    return true;
                 case "cloud_message":
                     ensureLogin(new Action() {
                         @Override

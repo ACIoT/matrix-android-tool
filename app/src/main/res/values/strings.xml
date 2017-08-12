@@ -14,4 +14,11 @@
     <string name="empty_list">无%1$s，下拉刷新</string>
     <string name="settings">设置</string>
     <string name="login">登录</string>
+    <string name="device_bind">设备绑定</string>
+    <string name="subdomain_can_not_empty">子域名不能为空</string>
+    <string name="physical_id_can_not_empty">物理ID不能为空</string>
+    <string name="subdomain">子域名</string>
+    <string name="physical_id">物理ID</string>
+    <string name="device_name">设备名称</string>
+    <string name="bind">绑定</string>
 </resources>

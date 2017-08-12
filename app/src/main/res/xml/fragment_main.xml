@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/device_management">
+        <Preference
+            android:key="device_bind"
+            android:title="@string/device_bind" />
+        <Preference
+            android:key="ota_upgrade"
+            android:title="@string/ota_upgrade" />
+    </PreferenceCategory>
     <PreferenceCategory android:title="@string/device_control">
         <Preference
             android:key="cloud_message"
             android:title="@string/cloud_message" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/device_management">
-        <Preference
-            android:key="ota_upgrade"
-            android:title="@string/ota_upgrade" />
-    </PreferenceCategory>
+
     <PreferenceCategory />
     <PreferenceCategory android:title="@string/local_device">
         <Preference
