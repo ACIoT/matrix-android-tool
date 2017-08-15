@@ -111,9 +111,6 @@ public class MainActivity extends ContainerActivity {
                     }
                 }
                 return true;
-            case R.id.settings:
-                Preferator.launch(this);
-                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -174,6 +171,10 @@ public class MainActivity extends ContainerActivity {
                     return true;
                 case "local_scan":
                     FunctionActivity.showFragment(getActivity(), LocalScanFragment.class.getName());
+                    return true;
+                case "settings":
+                    Preferator.launch(getActivity());
+                    return true;
             }
             return super.onPreferenceTreeClick(preferenceScreen, preference);
         }

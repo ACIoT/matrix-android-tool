@@ -20,4 +20,11 @@
             android:key="local_scan"
             android:title="@string/local_scan" />
     </PreferenceCategory>
+
+    <PreferenceCategory />
+    <PreferenceCategory android:title="@string/others">
+        <Preference
+            android:key="settings"
+            android:title="@string/settings" />
+    </PreferenceCategory>
 </PreferenceScreen>
