@@ -1,5 +1,6 @@
 package ablecloud.matrix.tool;
 
+import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -7,8 +8,11 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 import android.support.annotation.Nullable;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -143,6 +147,14 @@ public class MainActivity extends ContainerActivity {
         }
 
         @Override
+        public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+            View view = super.onCreateView(inflater, container, savedInstanceState);
+            ActionBar actionBar = getActivity().getActionBar();
+            actionBar.setSubtitle("Domain: " + MainApplication.getMainDomain() + ", Id: " + MainApplication.getMainDomainId());
+            return view;
+        }
+
+        @Override
         public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
             switch (preference.getKey()) {
                 case "device_bind":
@@ -168,6 +180,9 @@ public class MainActivity extends ContainerActivity {
                             FunctionActivity.showFragment(getActivity(), OtaUpgradeFragment.class.getName());
                         }
                     });
+                    return true;
+                case "ablelink":
+                    FunctionActivity.showFragment(getActivity(), AblelinkFragment.class.getName());
                     return true;
                 case "local_scan":
                     FunctionActivity.showFragment(getActivity(), LocalScanFragment.class.getName());

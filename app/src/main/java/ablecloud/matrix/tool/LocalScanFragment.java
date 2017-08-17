@@ -48,7 +48,7 @@ public class LocalScanFragment extends Fragment {
         adapter = new LocalDeviceAdapter(getActivity());
         ActionBar actionBar = getActivity().getActionBar();
         actionBar.setTitle(R.string.local_device);
-        actionBar.setSubtitle(R.string.local_scan);
+        actionBar.setSubtitle(getString(R.string.local_scan) + " Id: " + MainApplication.getMainDomainId());
     }
 
     @Nullable

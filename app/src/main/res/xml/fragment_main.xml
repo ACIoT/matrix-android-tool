@@ -17,6 +17,9 @@
     <PreferenceCategory />
     <PreferenceCategory android:title="@string/local_device">
         <Preference
+            android:key="ablelink"
+            android:title="@string/ablelink" />
+        <Preference
             android:key="local_scan"
             android:title="@string/local_scan" />
     </PreferenceCategory>
