@@ -26,4 +26,8 @@
     <string name="ssid_label">WIFI名称：%1$s</string>
     <string name="password">密码</string>
     <string name="start_link">开始配网</string>
+    <string name="device_data">设备数据</string>
+    <string name="list_devices_error">获取设备列表失败</string>
+    <string name="subscribe">订阅</string>
+    <string name="cancel_subscribe">取消订阅</string>
 </resources>

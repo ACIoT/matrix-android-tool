@@ -161,7 +161,15 @@ public class MainActivity extends ContainerActivity {
                     ensureLogin(new Action() {
                         @Override
                         public void run() throws Exception {
-                            FunctionActivity.showFragment(getActivity(),DeviceBindFragment.class.getName());
+                            FunctionActivity.showFragment(getActivity(), DeviceBindFragment.class.getName());
+                        }
+                    });
+                    return true;
+                case "ota_upgrade":
+                    ensureLogin(new Action() {
+                        @Override
+                        public void run() throws Exception {
+                            FunctionActivity.showFragment(getActivity(), OtaUpgradeFragment.class.getName());
                         }
                     });
                     return true;
@@ -173,11 +181,11 @@ public class MainActivity extends ContainerActivity {
                         }
                     });
                     return true;
-                case "ota_upgrade":
+                case "subscribe":
                     ensureLogin(new Action() {
                         @Override
                         public void run() throws Exception {
-                            FunctionActivity.showFragment(getActivity(), OtaUpgradeFragment.class.getName());
+                            FunctionActivity.showFragment(getActivity(), SubscribeFragment.class.getName());
                         }
                     });
                     return true;

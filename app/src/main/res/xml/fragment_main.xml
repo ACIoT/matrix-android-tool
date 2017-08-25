@@ -13,6 +13,11 @@
             android:key="cloud_message"
             android:title="@string/cloud_message" />
     </PreferenceCategory>
+    <PreferenceCategory android:title="@string/device_data">
+        <Preference
+            android:key="subscribe"
+            android:title="@string/subscribe" />
+    </PreferenceCategory>
 
     <PreferenceCategory />
     <PreferenceCategory android:title="@string/local_device">
