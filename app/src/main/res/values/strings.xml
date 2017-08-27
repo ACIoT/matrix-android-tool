@@ -30,4 +30,6 @@
     <string name="list_devices_error">获取设备列表失败</string>
     <string name="subscribe">订阅</string>
     <string name="cancel_subscribe">取消订阅</string>
+    <string name="scan_linking">扫描配网</string>
+    <string name="scan_all">扫描全部</string>
 </resources>

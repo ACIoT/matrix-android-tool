@@ -15,12 +15,11 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import ablecloud.matrix.MatrixCallback;
 import ablecloud.matrix.MatrixError;
-import ablecloud.matrix.activator.DeviceActivator;
+import ablecloud.matrix.activator.DeviceType;
 import ablecloud.matrix.local.LocalDevice;
 import ablecloud.matrix.local.MatrixLocal;
 import ablecloud.matrix.util.NetworkUtils;
@@ -51,7 +50,7 @@ public class AblelinkFragment extends Fragment implements RadioGroup.OnCheckedCh
     @BindView(R.id.log)
     TextView log;
 
-    private ActivatorInfo activatorInfo;
+    private DeviceType deviceType;
     private ProgressDialog progressDialog;
 
     @Override
@@ -78,11 +77,11 @@ public class AblelinkFragment extends Fragment implements RadioGroup.OnCheckedCh
 
         ssid.setText(getString(R.string.ssid_label, NetworkUtils.getSSID(getActivity())));
 
-        ActivatorInfo[] infos = ActivatorInfo.values();
-        for (int i = 0; i < infos.length; i++) {
+        DeviceType[] types = DeviceType.values();
+        for (int i = 0; i < types.length; i++) {
             RadioButton button = new RadioButton(getActivity());
             button.setId(R.id.type_group + i + 1);
-            button.setText(infos[i].name());
+            button.setText(types[i].name());
             typeGroup.addView(button);
         }
         typeGroup.setOnCheckedChangeListener(this);
@@ -100,25 +99,22 @@ public class AblelinkFragment extends Fragment implements RadioGroup.OnCheckedCh
 
     @Override
     public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
-        activatorInfo = ActivatorInfo.values()[checkedId - R.id.type_group - 1];
+        deviceType = DeviceType.values()[checkedId - R.id.type_group - 1];
     }
 
     @OnClick(R.id.start_link)
     public void onClick(View v) {
         progressDialog.show();
-        MatrixLocal.localDeviceManager().startAblelink(DeviceActivator.of(activatorInfo.type),
-                NetworkUtils.getSSID(getActivity()), password.getText().toString(), (int) TimeUnit.MINUTES.toMillis(1), new MatrixCallback<List<LocalDevice>>() {
+        MatrixLocal.localDeviceManager().startAblelink(deviceType,
+                NetworkUtils.getSSID(getActivity()), password.getText().toString(), (int) TimeUnit.MINUTES.toMillis(1), new MatrixCallback<LocalDevice>() {
                     @Override
-                    public void success(final List<LocalDevice> localDevices) {
+                    public void success(final LocalDevice localDevice) {
                         UiUtils.runOnUiThread(new Action() {
                             @Override
                             public void run() throws Exception {
                                 progressDialog.dismiss();
                                 log.append(log.length() > 0 ? "\n---\n" : "");
-                                log.append("Ablelink device number: " + localDevices.size() + "\n");
-                                for (LocalDevice localDevice : localDevices) {
-                                    log.append("ip: " + localDevice.ipAddress + ", physicalDeviceId: " + localDevice.physicalDeviceId + "\n");
-                                }
+                                log.append("ip: " + localDevice.ipAddress + ", physicalDeviceId: " + localDevice.physicalDeviceId + "\n");
                             }
                         });
                     }

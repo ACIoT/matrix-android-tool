@@ -8,6 +8,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -19,6 +22,7 @@ import java.util.List;
 import ablecloud.matrix.MatrixCallback;
 import ablecloud.matrix.MatrixError;
 import ablecloud.matrix.local.LocalDevice;
+import ablecloud.matrix.local.LocalDeviceManager;
 import ablecloud.matrix.local.MatrixLocal;
 import ablecloud.matrix.util.UiUtils;
 import butterknife.BindView;
@@ -42,6 +46,8 @@ public class LocalScanFragment extends Fragment {
     @BindView(android.R.id.empty)
     TextView emptyView;
 
+    private boolean linking;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +55,7 @@ public class LocalScanFragment extends Fragment {
         ActionBar actionBar = getActivity().getActionBar();
         actionBar.setTitle(R.string.local_device);
         actionBar.setSubtitle(getString(R.string.local_scan) + " Id: " + MainApplication.getMainDomainId());
+        setHasOptionsMenu(true);
     }
 
     @Nullable
@@ -66,32 +73,86 @@ public class LocalScanFragment extends Fragment {
     private SwipeRefreshLayout.OnRefreshListener onRefreshListener = new SwipeRefreshLayout.OnRefreshListener() {
         @Override
         public void onRefresh() {
-            MatrixLocal.localDeviceManager().findDevice(new MatrixCallback<List<LocalDevice>>() {
-                @Override
-                public void success(final List<LocalDevice> localDevices) {
-                    UiUtils.runOnUiThread(new Action() {
-                        @Override
-                        public void run() throws Exception {
-                            adapter.clear();
-                            adapter.addAll(localDevices);
-                            swipeRefreshLayout.setRefreshing(false);
-                        }
-                    });
-                }
+            adapter.clear();
 
-                @Override
-                public void error(MatrixError matrixError) {
-                    UiUtils.toast(getActivity(), "findDevice error: " + matrixError.getMessage());
-                    UiUtils.runOnUiThread(new Action() {
-                        @Override
-                        public void run() throws Exception {
-                            swipeRefreshLayout.setRefreshing(false);
-                        }
-                    });
-                }
-            });
+            if (linking) {
+                UiUtils.toast(getActivity(), R.string.scan_linking);
+                MatrixLocal.localDeviceManager().findLinkingDevice(LocalDeviceManager.DEFAULT_TIMEOUT_MS, LocalDeviceManager.DEFAULT_INTERVAL_MS, new MatrixCallback<LocalDevice>() {
+                    @Override
+                    public void success(final LocalDevice localDevice) {
+                        UiUtils.runOnUiThread(new Action() {
+                            @Override
+                            public void run() throws Exception {
+                                adapter.add(localDevice);
+                                swipeRefreshLayout.setRefreshing(false);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void error(MatrixError matrixError) {
+                        UiUtils.toast(getActivity(), "findLinkingDevice error: " + matrixError.getMessage());
+                        UiUtils.runOnUiThread(new Action() {
+                            @Override
+                            public void run() throws Exception {
+                                swipeRefreshLayout.setRefreshing(false);
+                            }
+                        });
+                    }
+                });
+                return;
+            } else {
+                UiUtils.toast(getActivity(), R.string.scan_all);
+                MatrixLocal.localDeviceManager().findDevice(new MatrixCallback<List<LocalDevice>>() {
+                    @Override
+                    public void success(final List<LocalDevice> localDevices) {
+                        UiUtils.runOnUiThread(new Action() {
+                            @Override
+                            public void run() throws Exception {
+                                adapter.addAll(localDevices);
+                                swipeRefreshLayout.setRefreshing(false);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void error(MatrixError matrixError) {
+                        UiUtils.toast(getActivity(), "findDevice error: " + matrixError.getMessage());
+                        UiUtils.runOnUiThread(new Action() {
+                            @Override
+                            public void run() throws Exception {
+                                swipeRefreshLayout.setRefreshing(false);
+                            }
+                        });
+                    }
+                });
+            }
         }
     };
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.fragment_local_scan, menu);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        MenuItem item = menu.findItem(R.id.linking);
+        item.setTitle(linking ? R.string.scan_linking : R.string.scan_all);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.linking:
+                linking = !linking;
+                getActivity().invalidateOptionsMenu();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     private static class LocalDeviceAdapter extends ArrayAdapter<LocalDevice> {
         public LocalDeviceAdapter(Context context) {

@@ -12,11 +12,15 @@ import io.reactivex.functions.Action;
  */
 
 public class UiUtils {
-    public static void toast(final Context context, final String message) {
+    public static void toast(final Context context, final int textId) {
+        toast(context, context.getString(textId));
+    }
+
+    public static void toast(final Context context, final String text) {
         Completable.complete().observeOn(AndroidSchedulers.mainThread()).subscribe(new Action() {
             @Override
             public void run() throws Exception {
-                Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
             }
         });
     }
