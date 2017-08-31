@@ -16,8 +16,8 @@ android {
         applicationId "ablecloud.matrix.tool"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 101
-        versionName "1.0.1"
+        versionCode 202
+        versionName "2.0.2"
         setProperty("archivesBaseName", "${project.getParent().getName()}-${versionName}")
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
