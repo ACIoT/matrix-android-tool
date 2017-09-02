@@ -32,4 +32,6 @@
     <string name="cancel_subscribe">取消订阅</string>
     <string name="scan_linking">扫描配网</string>
     <string name="scan_all">扫描全部</string>
+    <string name="local_message">局域网指令</string>
+    <string name="physical_device_id">设备物理Id:%1$s</string>
 </resources>

@@ -32,4 +32,18 @@ public class ContainerActivity extends Activity {
             e.printStackTrace();
         }
     }
+
+    protected void replaceFragment(Class<? extends Fragment> fragmentClass) {
+        try {
+            Fragment fragment = fragmentClass.newInstance();
+            getFragmentManager().beginTransaction().addToBackStack(null).replace(R.id.container, fragment).commitAllowingStateLoss();
+        } catch (InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected void replaceFragment(Fragment fragment) {
+        getFragmentManager().beginTransaction().addToBackStack(null).replace(R.id.container, fragment).commitAllowingStateLoss();
+    }
+
 }
