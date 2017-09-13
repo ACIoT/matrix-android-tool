@@ -24,6 +24,9 @@ import ablecloud.matrix.app.Matrix;
 import ablecloud.matrix.model.User;
 import ablecloud.matrix.util.PreferencesUtils;
 import io.reactivex.Completable;
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Single;
 import io.reactivex.SingleEmitter;
 import io.reactivex.SingleOnSubscribe;
@@ -196,7 +199,12 @@ public class MainActivity extends ContainerActivity {
                     FunctionActivity.showFragment(getActivity(), LocalScanFragment.class.getName());
                     return true;
                 case "settings":
-                    Preferator.launch(getActivity());
+                    ensureLogout(new Consumer<Boolean>() {
+                        @Override
+                        public void accept(@NonNull Boolean logout) throws Exception {
+                            Preferator.launch(getActivity());
+                        }
+                    });
                     return true;
             }
             return super.onPreferenceTreeClick(preferenceScreen, preference);
@@ -210,6 +218,26 @@ public class MainActivity extends ContainerActivity {
                     Toast.makeText(getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
+        }
+
+        private void ensureLogout(Consumer<Boolean> complete) {
+            Observable
+                    .create(new ObservableOnSubscribe<Boolean>() {
+                        @Override
+                        public void subscribe(ObservableEmitter<Boolean> emitter) throws Exception {
+                            if (!Matrix.accountManager().isLogin()) {
+                                emitter.onNext(true);
+                            } else {
+                                emitter.onError(new MatrixError(103, "Need logout first"));
+                            }
+                        }
+                    })
+                    .subscribe(complete, new Consumer<Throwable>() {
+                        @Override
+                        public void accept(@NonNull Throwable throwable) throws Exception {
+                            Toast.makeText(getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
         }
     }
 }
