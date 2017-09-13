@@ -64,6 +64,7 @@ public class DeviceBindFragment extends Fragment {
             @Override
             public void success(Device device) {
                 UiUtils.toast(getActivity(), "bindDevice success");
+                getActivity().finish();
             }
 
             @Override

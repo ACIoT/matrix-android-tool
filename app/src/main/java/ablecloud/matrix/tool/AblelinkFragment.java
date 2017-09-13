@@ -112,9 +112,13 @@ public class AblelinkFragment extends Fragment implements RadioGroup.OnCheckedCh
                         UiUtils.runOnUiThread(new Action() {
                             @Override
                             public void run() throws Exception {
-                                progressDialog.dismiss();
-                                log.append(log.length() > 0 ? "\n---\n" : "");
-                                log.append("ip: " + localDevice.ipAddress + ", physicalDeviceId: " + localDevice.physicalDeviceId + "\n");
+                                if (progressDialog != null) {
+                                    progressDialog.dismiss();
+                                }
+                                if (log != null) {
+                                    log.append(log.length() > 0 ? "\n---\n" : "");
+                                    log.append("ip: " + localDevice.ipAddress + ", physicalDeviceId: " + localDevice.physicalDeviceId + "\n");
+                                }
                             }
                         });
                     }
@@ -124,9 +128,13 @@ public class AblelinkFragment extends Fragment implements RadioGroup.OnCheckedCh
                         UiUtils.runOnUiThread(new Action() {
                             @Override
                             public void run() throws Exception {
-                                progressDialog.dismiss();
-                                log.append(log.length() > 0 ? "\n---\n" : "");
-                                log.append("Ablelink error: " + matrixError.getMessage());
+                                if (progressDialog != null) {
+                                    progressDialog.dismiss();
+                                }
+                                if (log != null) {
+                                    log.append(log.length() > 0 ? "\n---\n" : "");
+                                    log.append("Ablelink error: " + matrixError.getMessage());
+                                }
                             }
                         });
                     }
