@@ -5,13 +5,19 @@
     android:orientation="vertical">
 
     <EditText
+        android:id="@+id/msgCode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="msgCode" />
+
+    <EditText
         android:id="@+id/request"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="100dp"
-        android:gravity="left|top"
         android:digits="0123456789ABCDEFabcdef"
-        android:hint="@string/cloud_message" />
+        android:gravity="left|top"
+        android:hint="payload"
+        android:minHeight="100dp" />
 
     <Button
         android:id="@+id/send"
@@ -24,6 +30,6 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:scrollbars="vertical|horizontal"
-        android:background="@android:color/background_light" />
+        android:background="@android:color/background_light"
+        android:scrollbars="vertical|horizontal" />
 </LinearLayout>

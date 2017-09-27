@@ -3,6 +3,7 @@ package ablecloud.matrix.tool;
 import android.app.ActionBar;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.text.method.ScrollingMovementMethod;
 import android.text.util.Linkify;
 import android.view.LayoutInflater;
@@ -39,6 +40,9 @@ public class CloudMessageFragment extends DeviceFragment {
 
     private static final SimpleDateFormat FORMAT = new SimpleDateFormat("HH:mm:ss.SSS");
     private static final Pattern LINKIFY_HEX = Pattern.compile("(^|\\s+)([\\da-fA-F]{2})+($|\\s+)");
+
+    @BindView(R.id.msgCode)
+    EditText msgCode;
 
     @BindView(R.id.request)
     EditText request;
@@ -77,9 +81,14 @@ public class CloudMessageFragment extends DeviceFragment {
 
     @OnClick(R.id.send)
     public void onClick(View v) {
+        String msgCode = this.msgCode.getText().toString().trim();
         final String requestMessage = request.getText().toString();
         final long requestTime = System.currentTimeMillis();
-        Matrix.bindManager().sendDevice(device.subDomainName, device.physicalDeviceId, BindManager.Mode.CLOUD_ONLY, new DeviceMessage(66, ByteString.decodeHex(requestMessage).toByteArray()), new MatrixCallback<DeviceMessage>() {
+        if (TextUtils.isEmpty(msgCode) || TextUtils.isEmpty(requestMessage)) {
+            Toast.makeText(getActivity(), "msgCode和payload均不能为空", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Matrix.bindManager().sendDevice(device.subDomainName, device.physicalDeviceId, BindManager.Mode.CLOUD_ONLY, new DeviceMessage(Integer.parseInt(this.msgCode.getText().toString().trim()), ByteString.decodeHex(requestMessage).toByteArray()), new MatrixCallback<DeviceMessage>() {
             @Override
             public void success(DeviceMessage deviceMessage) {
                 Single.just(deviceMessage.getContent()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<byte[]>() {
