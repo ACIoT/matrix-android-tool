@@ -1,6 +1,5 @@
 package ablecloud.matrix.tool;
 
-import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -8,6 +7,7 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,6 +23,7 @@ import ablecloud.matrix.MatrixError;
 import ablecloud.matrix.app.Matrix;
 import ablecloud.matrix.model.User;
 import ablecloud.matrix.util.PreferencesUtils;
+import ablecloud.matrix.util.UiUtils;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -152,7 +153,7 @@ public class MainActivity extends ContainerActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
             View view = super.onCreateView(inflater, container, savedInstanceState);
-            ActionBar actionBar = getActivity().getActionBar();
+            ActionBar actionBar = UiUtils.getSupportActionBar(this);
             actionBar.setSubtitle("Domain: " + MainApplication.getMainDomain() + ", Id: " + MainApplication.getMainDomainId());
             return view;
         }

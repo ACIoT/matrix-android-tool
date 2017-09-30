@@ -1,9 +1,9 @@
 package ablecloud.matrix.tool;
 
-import android.app.ActionBar;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
 import android.text.method.ScrollingMovementMethod;
 import android.text.util.Linkify;
 import android.view.LayoutInflater;
@@ -22,6 +22,7 @@ import ablecloud.matrix.MatrixCallback;
 import ablecloud.matrix.MatrixError;
 import ablecloud.matrix.app.BindManager;
 import ablecloud.matrix.app.Matrix;
+import ablecloud.matrix.util.UiUtils;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -68,7 +69,7 @@ public class LocalMessageFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        ActionBar actionBar = getActivity().getActionBar();
+        ActionBar actionBar = UiUtils.getSupportActionBar(this);
         actionBar.setTitle(R.string.local_message);
         actionBar.setSubtitle(getString(R.string.physical_device_id, physicalDeviceId));
     }

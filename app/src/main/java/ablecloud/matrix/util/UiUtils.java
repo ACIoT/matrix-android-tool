@@ -1,6 +1,9 @@
 package ablecloud.matrix.util;
 
+import android.app.Fragment;
 import android.content.Context;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import io.reactivex.Completable;
@@ -27,5 +30,9 @@ public class UiUtils {
 
     public static void runOnUiThread(Action action) {
         Completable.complete().observeOn(AndroidSchedulers.mainThread()).subscribe(action);
+    }
+
+    public static ActionBar getSupportActionBar(Fragment fragment) {
+        return ((AppCompatActivity) fragment.getActivity()).getSupportActionBar();
     }
 }

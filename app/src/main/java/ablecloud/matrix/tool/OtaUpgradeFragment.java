@@ -1,8 +1,8 @@
 package ablecloud.matrix.tool;
 
-import android.app.ActionBar;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,7 +34,7 @@ public class OtaUpgradeFragment extends DeviceFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ActionBar actionBar = getActivity().getActionBar();
+        ActionBar actionBar = UiUtils.getSupportActionBar(this);
         actionBar.setTitle(R.string.device_management);
         actionBar.setSubtitle(R.string.ota_upgrade);
     }

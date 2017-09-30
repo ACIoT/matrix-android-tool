@@ -20,7 +20,7 @@ public class FunctionActivity extends ContainerActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         addFragment(getIntent().getStringExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT));
     }
 

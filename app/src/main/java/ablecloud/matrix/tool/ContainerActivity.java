@@ -1,15 +1,15 @@
 package ablecloud.matrix.tool;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 
 /**
  * Created by wangkun on 04/08/2017.
  */
 
-public class ContainerActivity extends Activity {
+public class ContainerActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

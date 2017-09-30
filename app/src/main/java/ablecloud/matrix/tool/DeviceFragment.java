@@ -1,12 +1,12 @@
 package ablecloud.matrix.tool;
 
-import android.app.ActionBar;
 import android.app.Fragment;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import ablecloud.matrix.helper.DeviceManager;
 import ablecloud.matrix.model.Device;
+import ablecloud.matrix.util.UiUtils;
 import io.reactivex.Completable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
@@ -54,7 +55,7 @@ public class DeviceFragment extends Fragment {
         super.onCreate(savedInstanceState);
         navigationAdapter = new DeviceNavigationAdapter(getActivity());
         navigationAdapter.addAll(DeviceManager.getDevices());
-        ActionBar actionBar = getActivity().getActionBar();
+        ActionBar actionBar = UiUtils.getSupportActionBar(this);
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
         actionBar.setListNavigationCallbacks(navigationAdapter, navigationListener);
     }

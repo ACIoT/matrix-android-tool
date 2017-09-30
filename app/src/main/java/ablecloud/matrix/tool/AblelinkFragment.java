@@ -1,11 +1,11 @@
 package ablecloud.matrix.tool;
 
-import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
 import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -56,7 +56,7 @@ public class AblelinkFragment extends Fragment implements RadioGroup.OnCheckedCh
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ActionBar actionBar = getActivity().getActionBar();
+        ActionBar actionBar = UiUtils.getSupportActionBar(this);
         actionBar.setTitle(R.string.local_device);
         actionBar.setSubtitle(getString(R.string.ablelink) + " Id: " + MainApplication.getMainDomainId());
         progressDialog = new ProgressDialog(getActivity());

@@ -1,8 +1,8 @@
 package ablecloud.matrix.tool;
 
-import android.app.ActionBar;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
 import android.text.method.ScrollingMovementMethod;
 import android.text.util.Linkify;
@@ -22,6 +22,7 @@ import ablecloud.matrix.MatrixCallback;
 import ablecloud.matrix.MatrixError;
 import ablecloud.matrix.app.BindManager;
 import ablecloud.matrix.app.Matrix;
+import ablecloud.matrix.util.UiUtils;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -55,7 +56,7 @@ public class CloudMessageFragment extends DeviceFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ActionBar actionBar = getActivity().getActionBar();
+        ActionBar actionBar = UiUtils.getSupportActionBar(this);
         actionBar.setTitle(R.string.device_control);
         actionBar.setSubtitle(R.string.cloud_message);
     }
