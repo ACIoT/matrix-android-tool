@@ -16,8 +16,8 @@ android {
         applicationId "ablecloud.matrix.tool"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 204
-        versionName "2.0.4"
+        versionCode 205
+        versionName "2.0.5"
         setProperty("archivesBaseName", "${project.getParent().getName()}-${versionName}")
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -53,8 +53,11 @@ android {
         if (variant.buildType.name == BuilderConstants.RELEASE) {
             def assembleTask = variant.assemble
             assembleTask.doLast {
+                def name = project.getParent().getName()
                 copy {
-                    from variant.outputs[0].outputFile
+                    from(variant.outputs[0].outputFile) {
+                        rename "${name}(.*)release.apk", "${name}.apk"
+                    }
                     into '../'
                 }
                 println "Publish output file of task '${assembleTask.name}'"
