@@ -24,7 +24,7 @@ public class MainApplication extends Application {
                     .putString(MAJOR_DOMAIN, BuildConfig.MAJOR_DOMAIN)
                     .putLong(MAJOR_DOMAIN_ID, BuildConfig.MAJOR_DOMAIN_ID).apply();
         }
-        Matrix.init(this, preferences.getString(MAJOR_DOMAIN, null), preferences.getLong(MAJOR_DOMAIN_ID, 0), Matrix.TEST_MODE);
+        Matrix.init(this, preferences.getString(MAJOR_DOMAIN, null), preferences.getLong(MAJOR_DOMAIN_ID, 0), Matrix.TEST_MODE, Matrix.REGION_CHINA);
     }
 
     public static String getMainDomain() {
