@@ -154,7 +154,8 @@ public class MainActivity extends ContainerActivity {
         public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
             View view = super.onCreateView(inflater, container, savedInstanceState);
             ActionBar actionBar = UiUtils.getSupportActionBar(this);
-            actionBar.setSubtitle("Domain: " + MainApplication.getMainDomain() + ", Id: " + MainApplication.getMainDomainId());
+            actionBar.setSubtitle(getString(R.string.main_domain) + ": " + MainApplication.getMainDomain() + ", " +
+                    getString(R.string.main_domain_id) + ": " + MainApplication.getMainDomainId());
             return view;
         }
 
