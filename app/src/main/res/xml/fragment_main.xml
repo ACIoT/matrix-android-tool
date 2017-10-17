@@ -5,6 +5,9 @@
             android:key="ablelink"
             android:title="@string/ablelink" />
         <Preference
+            android:key="APlink"
+            android:title="@string/aplink" />
+        <Preference
             android:key="local_scan"
             android:title="@string/local_scan" />
     </PreferenceCategory>

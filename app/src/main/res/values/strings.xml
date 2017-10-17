@@ -25,6 +25,7 @@
     <string name="bind">绑定</string>
     <string name="others">其他</string>
     <string name="ablelink">智能配网</string>
+    <string name="aplink">AP配网</string>
     <string name="ssid">WIFI</string>
     <string name="password">密码</string>
     <string name="start_link">开始配网</string>
@@ -36,4 +37,5 @@
     <string name="scan_all">扫描全部</string>
     <string name="local_message">局域网指令</string>
     <string name="physical_device_id">设备物理Id:%1$s</string>
+    <string name="device_ap_confirm">请确认已连接设备AP热点</string>
 </resources>

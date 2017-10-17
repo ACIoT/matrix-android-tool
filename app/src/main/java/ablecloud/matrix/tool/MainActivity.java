@@ -162,6 +162,15 @@ public class MainActivity extends ContainerActivity {
         @Override
         public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
             switch (preference.getKey()) {
+                case "ablelink":
+                    FunctionActivity.showFragment(getActivity(), AblelinkFragment.class.getName());
+                    return true;
+                case "APlink":
+                    FunctionActivity.showFragment(getActivity(), APlinkFragment.class.getName());
+                    return true;
+                case "local_scan":
+                    FunctionActivity.showFragment(getActivity(), LocalScanFragment.class.getName());
+                    return true;
                 case "device_bind":
                     ensureLogin(new Action() {
                         @Override
@@ -193,12 +202,6 @@ public class MainActivity extends ContainerActivity {
                             FunctionActivity.showFragment(getActivity(), SubscribeFragment.class.getName());
                         }
                     });
-                    return true;
-                case "ablelink":
-                    FunctionActivity.showFragment(getActivity(), AblelinkFragment.class.getName());
-                    return true;
-                case "local_scan":
-                    FunctionActivity.showFragment(getActivity(), LocalScanFragment.class.getName());
                     return true;
                 case "settings":
                     ensureLogout(new Consumer<Boolean>() {
