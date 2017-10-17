@@ -39,7 +39,7 @@ public class AblelinkFragment extends Fragment implements RadioGroup.OnCheckedCh
     private Unbinder unbinder;
 
     @BindView(R.id.ssid)
-    TextView ssid;
+    EditText ssid;
 
     @BindView(R.id.password)
     EditText password;
@@ -75,7 +75,8 @@ public class AblelinkFragment extends Fragment implements RadioGroup.OnCheckedCh
         View view = inflater.inflate(R.layout.fragment_ablelink, container, false);
         unbinder = ButterKnife.bind(this, view);
 
-        ssid.setText(getString(R.string.ssid_label, NetworkUtils.getSSID(getActivity())));
+        ssid.setText(NetworkUtils.getSSID(getActivity()));
+        ssid.setKeyListener(null);
 
         DeviceType[] types = DeviceType.values();
         for (int i = 0; i < types.length; i++) {

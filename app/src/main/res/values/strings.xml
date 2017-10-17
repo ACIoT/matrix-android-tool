@@ -23,7 +23,7 @@
     <string name="bind">绑定</string>
     <string name="others">其他</string>
     <string name="ablelink">智能配网</string>
-    <string name="ssid_label">WIFI名称：%1$s</string>
+    <string name="ssid">WIFI</string>
     <string name="password">密码</string>
     <string name="start_link">开始配网</string>
     <string name="device_data">设备数据</string>

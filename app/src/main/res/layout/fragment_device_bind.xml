@@ -4,23 +4,38 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/subDomain"
+    <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/subdomain" />
+        android:layout_height="wrap_content">
 
-    <EditText
-        android:id="@+id/physicalId"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/physical_id" />
+        <EditText
+            android:id="@+id/subDomain"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/subdomain" />
+    </android.support.design.widget.TextInputLayout>
 
-    <EditText
-        android:id="@+id/devieName"
+    <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/device_name" />
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/physicalId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/physical_id" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/devieName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/device_name" />
+    </android.support.design.widget.TextInputLayout>
 
     <Button
         android:id="@+id/bind"

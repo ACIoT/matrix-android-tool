@@ -4,14 +4,19 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/request"
+    <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:digits="0123456789ABCDEFabcdef"
-        android:gravity="left|top"
-        android:hint="@string/local_message"
-        android:minHeight="100dp" />
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/request"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:digits="0123456789ABCDEFabcdef"
+            android:gravity="left|top"
+            android:hint="@string/local_message"
+            android:minHeight="100dp" />
+    </android.support.design.widget.TextInputLayout>
 
     <Button
         android:id="@+id/send"
