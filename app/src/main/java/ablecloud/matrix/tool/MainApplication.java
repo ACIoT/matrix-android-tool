@@ -21,7 +21,7 @@ public class MainApplication extends Application {
     public void onCreate() {
         super.onCreate();
         preferences = getSharedPreferences("ablecloud_tool", MODE_PRIVATE);
-        if (!isInited()) {
+        if (isInited()) {
             Matrix.init(this, getMainDomain(), getMainDomainId(), getMode(), getRegion());
         }
     }

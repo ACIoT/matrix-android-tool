@@ -47,6 +47,7 @@ public class WelcomeActivity extends Activity {
         if (MainApplication.isInited()) {
             startActivity(new Intent(this, MainActivity.class));
             finish();
+            return;
         }
 
         View dialogLayout = getLayoutInflater().inflate(R.layout.dialog_init, (ViewGroup) getWindow().getDecorView(), false);
@@ -81,7 +82,7 @@ public class WelcomeActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unbinder.unbind();
+        if (unbinder != null) unbinder.unbind();
     }
 
     @OnItemSelected({R.id.mode, R.id.region})
