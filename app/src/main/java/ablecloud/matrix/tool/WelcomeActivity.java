@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import ablecloud.matrix.app.Matrix;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnItemSelected;
@@ -37,9 +38,11 @@ public class WelcomeActivity extends Activity {
     Spinner regionSpinner;
 
     private AlertDialog initDialog;
-    private int mode;
-    private int region;
+    private Mode mode;
+    private Region region;
     private Unbinder unbinder;
+    private ArrayAdapter<Mode> modeAdapter;
+    private ArrayAdapter<Region> regionAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -53,11 +56,11 @@ public class WelcomeActivity extends Activity {
         View dialogLayout = getLayoutInflater().inflate(R.layout.dialog_init, (ViewGroup) getWindow().getDecorView(), false);
         unbinder = ButterKnife.bind(this, dialogLayout);
 
-        ArrayAdapter<Mode> modeAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
+        modeAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
         modeAdapter.addAll(Mode.values());
         modeSpinner.setAdapter(modeAdapter);
 
-        ArrayAdapter<Region> regionAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
+        regionAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
         regionAdapter.addAll(Region.values());
         regionSpinner.setAdapter(regionAdapter);
 
@@ -68,7 +71,7 @@ public class WelcomeActivity extends Activity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         ((MainApplication) getApplication()).init(mainDomain.getText().toString(),
-                                Long.valueOf(mainDomainId.getText().toString()), mode, region);
+                                Long.valueOf(mainDomainId.getText().toString()), mode.value, region.value);
                         startActivity(new Intent(WelcomeActivity.this, MainActivity.class));
                         finish();
                     }
@@ -89,19 +92,35 @@ public class WelcomeActivity extends Activity {
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         switch (parent.getId()) {
             case R.id.mode:
-                mode = position;
+                mode = position >= 0 ? modeAdapter.getItem(position) : null;
                 break;
             case R.id.region:
-                region = position < 2 ? position : (position - 1);
+                region = position >= 0 ? regionAdapter.getItem(position) : null;
                 break;
         }
     }
 
     private enum Mode {
-        MODE_TEST, MODE_PRODUCTION
+        TEST_MODE(Matrix.TEST_MODE),
+        PRODUCTION_MODE(Matrix.PRODUCTION_MODE);
+
+        private int value;
+
+        Mode(int value) {
+            this.value = value;
+        }
     }
 
     private enum Region {
-        REGION_CHINA, REGION_SOUTHEAST_ASIA, REGION_NORTH_AMERICA, REGION_CENTRAL_EUROPE
+        REGION_CHINA(Matrix.REGION_CHINA),
+        REGION_SOUTHEAST_ASIA(Matrix.REGION_SOUTHEAST_ASIA),
+        REGION_NORTH_AMERICA(Matrix.REGION_NORTH_AMERICA),
+        REGION_CENTRAL_EUROPE(Matrix.REGION_CENTRAL_EUROPE);
+
+        private int value;
+
+        Region(int value) {
+            this.value = value;
+        }
     }
 }

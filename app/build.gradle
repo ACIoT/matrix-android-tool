@@ -10,8 +10,8 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion 26
+    buildToolsVersion "26.0.2"
     defaultConfig {
         applicationId "ablecloud.matrix.tool"
         minSdkVersion 21
@@ -71,13 +71,14 @@ repositories {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile(name: 'ablecloud-matrix-app-sdk-v2.0.6-release', ext: 'aar')
-    compile(name: 'ablecloud-matrix-local-sdk-v2.0.6-release', ext: 'aar')
+    compile(name: 'ablecloud-matrix-app-sdk-v2.0.6-1-gb0c7291-release', ext: 'aar')
+    compile(name: 'ablecloud-matrix-local-sdk-v2.0.6-1-gb0c7291-release', ext: 'aar')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    compile 'com.android.support:design:25.3.1'
+    compile 'com.android.support:appcompat-v7:26.1.0'
+    compile 'com.android.support:recyclerview-v7:26.1.0'
+    compile 'com.android.support:design:26.1.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
 
@@ -91,5 +92,5 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
 
     compile 'com.sloydev:preferator:1.1.0'
-    compile 'com.android.support:recyclerview-v7:25.3.1'
+    compile 'com.github.ganfra:material-spinner:2.0.0'
 }

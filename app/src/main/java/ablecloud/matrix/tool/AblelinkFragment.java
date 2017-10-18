@@ -3,16 +3,16 @@ package ablecloud.matrix.tool;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.util.concurrent.TimeUnit;
@@ -27,6 +27,7 @@ import ablecloud.matrix.util.UiUtils;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnItemSelected;
 import butterknife.Unbinder;
 import io.reactivex.functions.Action;
 
@@ -34,7 +35,7 @@ import io.reactivex.functions.Action;
  * Created by wangkun on 17/08/2017.
  */
 
-public class AblelinkFragment extends Fragment implements RadioGroup.OnCheckedChangeListener {
+public class AblelinkFragment extends Fragment {
 
     private Unbinder unbinder;
 
@@ -44,8 +45,8 @@ public class AblelinkFragment extends Fragment implements RadioGroup.OnCheckedCh
     @BindView(R.id.password)
     EditText password;
 
-    @BindView(R.id.type_group)
-    RadioGroup typeGroup;
+    @BindView(R.id.type_spinner)
+    Spinner typeSpinner;
 
     @BindView(R.id.log)
     TextView log;
@@ -78,15 +79,9 @@ public class AblelinkFragment extends Fragment implements RadioGroup.OnCheckedCh
         ssid.setText(NetworkUtils.getSSID(getActivity()));
         ssid.setKeyListener(null);
 
-        DeviceType[] types = DeviceType.values();
-        for (int i = 0; i < types.length; i++) {
-            RadioButton button = new RadioButton(getActivity());
-            button.setId(R.id.type_group + i + 1);
-            button.setText(types[i].name());
-            typeGroup.addView(button);
-        }
-        typeGroup.setOnCheckedChangeListener(this);
-        typeGroup.check(R.id.type_group + 1);
+        ArrayAdapter<DeviceType> typeAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1);
+        typeAdapter.addAll(DeviceType.values());
+        typeSpinner.setAdapter(typeAdapter);
 
         log.setMovementMethod(new ScrollingMovementMethod());
         return view;
@@ -98,9 +93,9 @@ public class AblelinkFragment extends Fragment implements RadioGroup.OnCheckedCh
         unbinder.unbind();
     }
 
-    @Override
-    public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
-        deviceType = DeviceType.values()[checkedId - R.id.type_group - 1];
+    @OnItemSelected(R.id.type_spinner)
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        deviceType = position >= 0 ? DeviceType.values()[position] : null;
     }
 
     @OnClick(R.id.start_link)
