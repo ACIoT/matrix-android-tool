@@ -1,6 +1,7 @@
 package ablecloud.matrix.tool;
 
 import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -38,9 +39,15 @@ public class ContainerActivity extends AppCompatActivity {
     }
 
     protected void replaceFragment(Class<? extends Fragment> fragmentClass) {
+        replaceFragment(fragmentClass, true);
+    }
+
+    protected void replaceFragment(Class<? extends Fragment> fragmentClass, boolean addToStack) {
         try {
             Fragment fragment = fragmentClass.newInstance();
-            getFragmentManager().beginTransaction().addToBackStack(null).replace(R.id.container, fragment).commitAllowingStateLoss();
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+            if (addToStack) transaction.addToBackStack(null);
+            transaction.replace(R.id.container, fragment).commitAllowingStateLoss();
         } catch (InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
