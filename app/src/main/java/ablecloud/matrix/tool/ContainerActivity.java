@@ -13,7 +13,11 @@ public class ContainerActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_container);
+        setContentView(getContentLayout());
+    }
+
+    protected int getContentLayout() {
+        return R.layout.activity_container;
     }
 
     protected void addFragment(String fragmentClass) {

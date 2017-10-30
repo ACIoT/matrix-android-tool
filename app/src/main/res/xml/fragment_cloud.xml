@@ -1,18 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory android:title="@string/local_device">
-        <Preference
-            android:key="ablelink"
-            android:title="@string/ablelink" />
-        <Preference
-            android:key="APlink"
-            android:title="@string/aplink" />
-        <Preference
-            android:key="local_scan"
-            android:title="@string/local_scan" />
-    </PreferenceCategory>
-
-    <PreferenceCategory />
     <PreferenceCategory android:title="@string/device_management">
         <Preference
             android:key="device_bind"
@@ -30,12 +17,5 @@
         <Preference
             android:key="subscribe"
             android:title="@string/subscribe" />
-    </PreferenceCategory>
-
-    <PreferenceCategory />
-    <PreferenceCategory android:title="@string/others">
-        <Preference
-            android:key="settings"
-            android:title="@string/settings" />
     </PreferenceCategory>
 </PreferenceScreen>

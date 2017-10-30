@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <Preference
+        android:key="ablelink"
+        android:title="@string/ablelink" />
+    <Preference
+        android:key="APlink"
+        android:title="@string/aplink" />
+    <Preference
+        android:key="local_scan"
+        android:title="@string/local_scan" />
+</PreferenceScreen>

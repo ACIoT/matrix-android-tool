@@ -58,7 +58,6 @@ public class AblelinkFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ActionBar actionBar = UiUtils.getSupportActionBar(this);
-        actionBar.setTitle(R.string.local_device);
         actionBar.setSubtitle(getString(R.string.ablelink) + " Id: " + MainApplication.getMainDomainId());
         progressDialog = new ProgressDialog(getActivity());
         progressDialog.setCancelable(false);

@@ -74,7 +74,7 @@ public class LocalScanFragment extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(onRefreshListener);
         listView.setAdapter(adapter);
         listView.setEmptyView(emptyView);
-        emptyView.setText(getString(R.string.empty_list, getString(R.string.local_device)));
+        emptyView.setText(getString(R.string.empty_list, getString(R.string.local)));
         return view;
     }
 
@@ -82,7 +82,7 @@ public class LocalScanFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         ActionBar actionBar = UiUtils.getSupportActionBar(this);
-        actionBar.setTitle(R.string.local_device);
+        actionBar.setTitle(R.string.local);
         actionBar.setSubtitle(getString(R.string.local_scan) + " Id: " + MainApplication.getMainDomainId());
     }
 

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 
 /**
@@ -14,14 +15,25 @@ import android.view.MenuItem;
 public class FunctionActivity extends ContainerActivity {
 
     public static void showFragment(Context context, String name) {
-        context.startActivity(new Intent(context, FunctionActivity.class).putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT, name));
+        showFragment(context, name, null);
+    }
+
+    public static void showFragment(Context context, String fragment, String title) {
+        Intent intent = new Intent(context, FunctionActivity.class);
+        intent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT, fragment);
+        if (title != null) intent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT_TITLE, title);
+        context.startActivity(intent);
     }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        addFragment(getIntent().getStringExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT));
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        Intent intent = getIntent();
+        if (intent.hasExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT_TITLE))
+            actionBar.setTitle(intent.getStringExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT_TITLE));
+        addFragment(intent.getStringExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT));
     }
 
     @Override

@@ -82,7 +82,6 @@ public class APlinkFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         ActionBar actionBar = UiUtils.getSupportActionBar(this);
-        actionBar.setTitle(R.string.local_device);
         actionBar.setSubtitle(getString(R.string.aplink) + " Id: " + MainApplication.getMainDomainId());
         UiUtils.toast(getActivity(), R.string.device_ap_confirm);
     }
