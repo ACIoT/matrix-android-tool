@@ -217,26 +217,41 @@ public class MainActivity extends ContainerActivity {
 
         @Override
         public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
-            if (!Matrix.accountManager().isLogin()) {
-                Toast.makeText(getActivity(), "Need login first", Toast.LENGTH_SHORT).show();
-                return false;
-            }
 
             switch (preference.getKey()) {
+                case "sign_up":
+                    FunctionActivity.showFragment(getActivity(), SignUpFragment.class.getName(), getString(R.string.sign_up));
+                    return true;
                 case "device_bind":
-                    FunctionActivity.showFragment(getActivity(), DeviceBindFragment.class.getName(), getString(R.string.device_management));
+                    if (ensureLogin()) {
+                        FunctionActivity.showFragment(getActivity(), DeviceBindFragment.class.getName(), getString(R.string.device_management));
+                    }
                     return true;
                 case "ota_upgrade":
-                    FunctionActivity.showFragment(getActivity(), OtaUpgradeFragment.class.getName(), getString(R.string.device_management));
+                    if (ensureLogin()) {
+                        FunctionActivity.showFragment(getActivity(), OtaUpgradeFragment.class.getName(), getString(R.string.device_management));
+                    }
                     return true;
                 case "cloud_message":
-                    FunctionActivity.showFragment(getActivity(), CloudMessageFragment.class.getName(), getString(R.string.device_control));
+                    if (ensureLogin()) {
+                        FunctionActivity.showFragment(getActivity(), CloudMessageFragment.class.getName(), getString(R.string.device_control));
+                    }
                     return true;
                 case "subscribe":
-                    FunctionActivity.showFragment(getActivity(), SubscribeFragment.class.getName(), getString(R.string.device_data));
+                    if (ensureLogin()) {
+                        FunctionActivity.showFragment(getActivity(), SubscribeFragment.class.getName(), getString(R.string.device_data));
+                    }
                     return true;
             }
             return super.onPreferenceTreeClick(preferenceScreen, preference);
+        }
+
+        private boolean ensureLogin() {
+            boolean login = Matrix.accountManager().isLogin();
+            if (!login) {
+                Toast.makeText(getActivity(), "Need login first", Toast.LENGTH_SHORT).show();
+            }
+            return login;
         }
     }
 

@@ -45,4 +45,14 @@
     <string name="physical_device_id">设备物理Id:%1$s</string>
     <string name="device_ap_confirm">请确认已连接设备AP热点</string>
     <string name="device_type">设备类型</string>
+    <string name="sign_up">注册</string>
+    <string name="type_your_phone">请输入手机号</string>
+    <string name="type_ver_code">请输入验证码</string>
+    <string name="type_password">请输入密码</string>
+    <string name="fetch_ver_code">获取验证码</string>
+    <string name="user_module">用户相关</string>
+    <string name="account">账号</string>
+    <string name="ver_code_sent">验证码已发送</string>
+    <string name="sign_up_check_tips">手机号、验证码、密码均不能为空</string>
+    <string name="sign_up_done">注册成功，请登录</string>
 </resources>

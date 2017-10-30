@@ -15,7 +15,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:minWidth="300dp"
-            android:hint="账号" />
+            android:hint="@string/account" />
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
@@ -28,6 +28,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:minWidth="300dp"
-            android:hint="密码" />
+            android:hint="@string/password" />
     </android.support.design.widget.TextInputLayout>
 </LinearLayout>
