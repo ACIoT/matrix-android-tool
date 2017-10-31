@@ -40,13 +40,13 @@ public class MainActivity extends ContainerActivity {
             public boolean onNavigationItemSelected(@android.support.annotation.NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.local:
-                        replaceFragment(LocalFragment.class, LocalFragment.TAG);
+                        replaceFragment(LocalFragment.class, false);
                         return true;
                     case R.id.cloud:
-                        replaceFragment(CloudFragment.class, CloudFragment.TAG);
+                        replaceFragment(CloudFragment.class, false);
                         return true;
                     case R.id.others:
-                        replaceFragment(OthersFragment.class, OthersFragment.TAG);
+                        replaceFragment(OthersFragment.class, false);
                         return true;
                 }
                 return false;

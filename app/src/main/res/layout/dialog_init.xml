@@ -39,7 +39,7 @@
 
     <fr.ganfra.materialspinner.MaterialSpinner
         android:id="@+id/region"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:minWidth="300dp"
         app:ms_hint="@string/region" />
