@@ -37,10 +37,10 @@ public class ContainerActivity extends AppCompatActivity {
         }
     }
 
-    protected void replaceFragment(Class<? extends Fragment> fragmentClass) {
+    protected void replaceFragment(Class<? extends Fragment> fragmentClass, String tag) {
         try {
             Fragment fragment = fragmentClass.newInstance();
-            getFragmentManager().beginTransaction().addToBackStack(null).replace(R.id.container, fragment).commitAllowingStateLoss();
+            getFragmentManager().beginTransaction().replace(R.id.container, fragment, tag).commitAllowingStateLoss();
         } catch (InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }

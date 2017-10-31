@@ -1,9 +1,9 @@
 package ablecloud.matrix.tool;
 
 import android.app.Fragment;
-import android.opengl.Matrix;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +32,14 @@ public class SignUpFragment extends Fragment {
     @BindView(R.id.password)
     EditText password;
     Unbinder unbinder;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        ActionBar actionBar = UiUtils.getSupportActionBar(this);
+        actionBar.setTitle(R.string.user_module);
+        actionBar.setSubtitle(R.string.sign_up);
+    }
 
     @Nullable
     @Override

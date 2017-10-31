@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 /**
@@ -23,6 +24,13 @@ public class FunctionActivity extends ContainerActivity {
         intent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT, fragment);
         if (title != null) intent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT_TITLE, title);
         context.startActivity(intent);
+    }
+
+    public static void showFragmentForResult(AppCompatActivity activity, String fragment, String title) {
+        Intent intent = new Intent(activity, FunctionActivity.class);
+        intent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT, fragment);
+        if (title != null) intent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT_TITLE, title);
+        activity.startActivityForResult(intent, MainActivity.CloudFragment.REQUEST_CODE_LOGIN);
     }
 
     @Override

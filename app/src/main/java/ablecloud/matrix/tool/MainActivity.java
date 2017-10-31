@@ -1,36 +1,23 @@
 package ablecloud.matrix.tool;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
-import android.view.Menu;
-import android.view.MenuInflater;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sloydev.preferator.Preferator;
 
-import ablecloud.matrix.MatrixCallback;
-import ablecloud.matrix.MatrixError;
 import ablecloud.matrix.app.Matrix;
-import ablecloud.matrix.model.User;
 import ablecloud.matrix.util.PreferencesUtils;
 import ablecloud.matrix.util.UiUtils;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.reactivex.Single;
-import io.reactivex.SingleEmitter;
-import io.reactivex.SingleOnSubscribe;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Action;
-import io.reactivex.functions.Consumer;
 
 public class MainActivity extends ContainerActivity {
 
@@ -53,13 +40,13 @@ public class MainActivity extends ContainerActivity {
             public boolean onNavigationItemSelected(@android.support.annotation.NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.local:
-                        replaceFragment(LocalFragment.class);
+                        replaceFragment(LocalFragment.class, LocalFragment.TAG);
                         return true;
                     case R.id.cloud:
-                        replaceFragment(CloudFragment.class);
+                        replaceFragment(CloudFragment.class, CloudFragment.TAG);
                         return true;
                     case R.id.others:
-                        replaceFragment(OthersFragment.class);
+                        replaceFragment(OthersFragment.class, OthersFragment.TAG);
                         return true;
                 }
                 return false;
@@ -68,8 +55,21 @@ public class MainActivity extends ContainerActivity {
         bottomBar.setSelectedItemId(R.id.local);
     }
 
-    public static class LocalFragment extends PreferenceFragment {
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode != RESULT_OK) {
+            return;
+        }
+        if (requestCode == CloudFragment.REQUEST_CODE_LOGIN) {
+            CloudFragment cloudFragment = (CloudFragment) getFragmentManager().findFragmentByTag(CloudFragment.TAG);
+            if (cloudFragment != null) {
+                cloudFragment.onActivityResult(requestCode, resultCode, data);
+            }
+        }
+    }
 
+    public static class LocalFragment extends PreferenceFragment {
+        public static final String TAG = "LocalFragment";
         private String title;
 
         @Override
@@ -104,123 +104,50 @@ public class MainActivity extends ContainerActivity {
     }
 
     public static class CloudFragment extends PreferenceFragment {
-        private AlertDialog loginDialog;
-        private AlertDialog logoutDialog;
+        public static final String TAG = "CloudFragment";
+        public static final int REQUEST_CODE_LOGIN = 100;
 
         @Override
         public void onCreate(@Nullable Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             setHasOptionsMenu(true);
             addPreferencesFromResource(R.xml.fragment_cloud);
-
-            loginDialog = new AlertDialog.Builder(getActivity())
-                    .setTitle("登录")
-                    .setView(R.layout.dialog_login)
-                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            final String a = ((TextView) loginDialog.findViewById(R.id.account)).getText().toString();
-                            String p = ((TextView) loginDialog.findViewById(R.id.password)).getText().toString();
-                            login(a, p).observeOn(AndroidSchedulers.mainThread()).doFinally(new Action() {
-                                @Override
-                                public void run() throws Exception {
-                                    getActivity().invalidateOptionsMenu();
-                                }
-                            }).subscribe(new Consumer<User>() {
-                                @Override
-                                public void accept(@NonNull User user) throws Exception {
-                                    PreferencesUtils.putString(getActivity(), MATRIX_ACCOUNT, a);
-                                    Toast.makeText(getActivity(), "登录成功", Toast.LENGTH_SHORT).show();
-                                }
-                            }, new Consumer<Throwable>() {
-                                @Override
-                                public void accept(@NonNull Throwable throwable) throws Exception {
-                                    Toast.makeText(getActivity(), "登录失败:" + throwable.getMessage(), Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                        }
-                    })
-                    .setNegativeButton(android.R.string.cancel, null)
-                    .create();
-            logoutDialog = new AlertDialog.Builder(getActivity())
-                    .setMessage("确认退出？")
-                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            Matrix.accountManager().logout();
-                            getActivity().invalidateOptionsMenu();
-                        }
-                    })
-                    .setNegativeButton(android.R.string.cancel, null)
-                    .create();
-        }
-
-        private Single<User> login(final String account, final String password) {
-            return Single.create(new SingleOnSubscribe<User>() {
-                @Override
-                public void subscribe(final SingleEmitter<User> emitter) throws Exception {
-                    Matrix.accountManager().login(account, password, new MatrixCallback<User>() {
-                        @Override
-                        public void success(User user) {
-                            emitter.onSuccess(user);
-                        }
-
-                        @Override
-                        public void error(MatrixError error) {
-                            emitter.onError(error);
-                        }
-                    });
-                }
-            });
         }
 
         @Override
         public void onActivityCreated(@Nullable Bundle savedInstanceState) {
             super.onActivityCreated(savedInstanceState);
-            UiUtils.getSupportActionBar(this)
-                    .setSubtitle(getString(R.string.main_domain) + ": " + MainApplication.getMainDomain());
-        }
-
-        @Override
-        public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-            super.onCreateOptionsMenu(menu, inflater);
-            inflater.inflate(R.menu.fragment_cloud, menu);
-        }
-
-        @Override
-        public void onPrepareOptionsMenu(Menu menu) {
-            MenuItem accountItem = menu.findItem(R.id.account);
-            boolean login = Matrix.accountManager().isLogin();
-            if (!login) {
-                accountItem.setTitle(R.string.login);
-            } else {
-                accountItem.setTitle(PreferencesUtils.getString(getActivity(), MATRIX_ACCOUNT));
-            }
-        }
-
-        @Override
-        public boolean onOptionsItemSelected(MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.account:
-                    if (Matrix.accountManager().isLogin()) {
-                        if (!logoutDialog.isShowing())
-                            logoutDialog.show();
-                    } else {
-                        if (!loginDialog.isShowing()) {
-                            loginDialog.show();
-                        }
-                    }
-                    return true;
-            }
-            return super.onOptionsItemSelected(item);
+            UiUtils.getSupportActionBar(this).setSubtitle(getString(R.string.main_domain) + ": " + MainApplication.getMainDomain());
+            String account = PreferencesUtils.getString(getActivity(), MATRIX_ACCOUNT);
+            findPreference("sign_in").setTitle(Matrix.accountManager().isLogin() ? getString(R.string.who_login, account) : getString(R.string.login));
         }
 
         @Override
         public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
 
             switch (preference.getKey()) {
+                case "sign_in":
+                    if (Matrix.accountManager().isLogin()) {
+                        UiUtils.toast(getActivity(), getString(R.string.logout_first));
+                        return true;
+                    }
+                    FunctionActivity.showFragmentForResult((AppCompatActivity) getActivity(), SignInFragment.class.getName(), getString(R.string.user_module));
+                    return true;
+                case "sign_out":
+                    if (!Matrix.accountManager().isLogin()) {
+                        UiUtils.toast(getActivity(), getString(R.string.login_first));
+                        return true;
+                    }
+                    Matrix.accountManager().logout();
+                    UiUtils.toast(getActivity(), getString(R.string.sign_out_success));
+                    findPreference("sign_in").setTitle(getString(R.string.login));
+                    return true;
                 case "sign_up":
-                    FunctionActivity.showFragment(getActivity(), SignUpFragment.class.getName(), getString(R.string.sign_up));
+                    if (Matrix.accountManager().isLogin()) {
+                        UiUtils.toast(getActivity(), getActivity().getString(R.string.logout_first));
+                        return true;
+                    }
+                    FunctionActivity.showFragment(getActivity(), SignUpFragment.class.getName(), getString(R.string.user_module));
                     return true;
                 case "device_bind":
                     if (ensureLogin()) {
@@ -253,9 +180,22 @@ public class MainActivity extends ContainerActivity {
             }
             return login;
         }
+
+        @Override
+        public void onActivityResult(int requestCode, int resultCode, Intent data) {
+            if (resultCode != RESULT_OK) {
+                return;
+            }
+            if (requestCode == REQUEST_CODE_LOGIN) {
+                String account = PreferencesUtils.getString(getActivity(), MATRIX_ACCOUNT);
+                findPreference("sign_in").setTitle(getString(R.string.who_login, account));
+            }
+        }
     }
 
     public static class OthersFragment extends PreferenceFragment {
+        public static final String TAG = "OthersFragment";
+
         @Override
         public void onCreate(@Nullable Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);

@@ -55,4 +55,11 @@
     <string name="ver_code_sent">验证码已发送</string>
     <string name="sign_up_check_tips">手机号、验证码、密码均不能为空</string>
     <string name="sign_up_done">注册成功，请登录</string>
+    <string name="sign_in_check_tips">账号、密码均不能为空</string>
+    <string name="sign_in_success">登录成功</string>
+    <string name="logout_first">请先登出</string>
+    <string name="sign_out">登出</string>
+    <string name="sign_out_success">登出成功</string>
+    <string name="login_first">请先登录</string>
+    <string name="who_login">登录（%1$s）</string>
 </resources>
