@@ -39,15 +39,15 @@ public class ContainerActivity extends AppCompatActivity {
     }
 
     protected void replaceFragment(Class<? extends Fragment> fragmentClass) {
-        replaceFragment(fragmentClass, null, true);
+        replaceFragment(fragmentClass, true);
     }
 
-    protected void replaceFragment(Class<? extends Fragment> fragmentClass, String tag, boolean addToStack) {
+    protected void replaceFragment(Class<? extends Fragment> fragmentClass, boolean addToStack) {
         try {
             Fragment fragment = fragmentClass.newInstance();
             FragmentTransaction transaction = getFragmentManager().beginTransaction();
             if (addToStack) transaction.addToBackStack(null);
-            transaction.replace(R.id.container, fragment, tag).commitAllowingStateLoss();
+            transaction.replace(R.id.container, fragment).commitAllowingStateLoss();
         } catch (InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }

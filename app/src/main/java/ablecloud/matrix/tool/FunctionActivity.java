@@ -1,12 +1,12 @@
 package ablecloud.matrix.tool;
 
+import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 /**
@@ -26,11 +26,11 @@ public class FunctionActivity extends ContainerActivity {
         context.startActivity(intent);
     }
 
-    public static void showFragmentForResult(AppCompatActivity activity, String fragment, String title) {
-        Intent intent = new Intent(activity, FunctionActivity.class);
-        intent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT, fragment);
+    public static void showFragmentForResult(Fragment fragment, String fragmentClassName, String title) {
+        Intent intent = new Intent(fragment.getActivity(), FunctionActivity.class);
+        intent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT, fragmentClassName);
         if (title != null) intent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT_TITLE, title);
-        activity.startActivityForResult(intent, MainActivity.CloudFragment.REQUEST_CODE_LOGIN);
+        fragment.startActivityForResult(intent, MainActivity.CloudFragment.REQUEST_CODE_LOGIN);
     }
 
     @Override

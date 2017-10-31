@@ -7,7 +7,6 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
-import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -40,32 +39,19 @@ public class MainActivity extends ContainerActivity {
             public boolean onNavigationItemSelected(@android.support.annotation.NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.local:
-                        replaceFragment(LocalFragment.class, LocalFragment.TAG, false);
+                        replaceFragment(LocalFragment.class, false);
                         return true;
                     case R.id.cloud:
-                        replaceFragment(CloudFragment.class, CloudFragment.TAG, false);
+                        replaceFragment(CloudFragment.class, false);
                         return true;
                     case R.id.others:
-                        replaceFragment(OthersFragment.class, OthersFragment.TAG, false);
+                        replaceFragment(OthersFragment.class, false);
                         return true;
                 }
                 return false;
             }
         });
         bottomBar.setSelectedItemId(R.id.local);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode != RESULT_OK) {
-            return;
-        }
-        if (requestCode == CloudFragment.REQUEST_CODE_LOGIN) {
-            CloudFragment cloudFragment = (CloudFragment) getFragmentManager().findFragmentByTag(CloudFragment.TAG);
-            if (cloudFragment != null) {
-                cloudFragment.onActivityResult(requestCode, resultCode, data);
-            }
-        }
     }
 
     public static class LocalFragment extends PreferenceFragment {
@@ -131,7 +117,7 @@ public class MainActivity extends ContainerActivity {
                         UiUtils.toast(getActivity(), getString(R.string.logout_first));
                         return true;
                     }
-                    FunctionActivity.showFragmentForResult((AppCompatActivity) getActivity(), SignInFragment.class.getName(), getString(R.string.user_module));
+                    FunctionActivity.showFragmentForResult(this, SignInFragment.class.getName(), getString(R.string.user_module));
                     return true;
                 case "sign_out":
                     if (!Matrix.accountManager().isLogin()) {
