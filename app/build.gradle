@@ -16,8 +16,8 @@ android {
         applicationId "ablecloud.matrix.tool"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 205
-        versionName "2.0.5"
+        versionCode 210
+        versionName "2.1.0"
         setProperty("archivesBaseName", "${project.getParent().getName()}-${versionName}")
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -74,8 +74,8 @@ repositories {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile(name: 'ablecloud-matrix-app-sdk-v2.0.6-8-g41d49e8-release', ext: 'aar')
-    compile(name: 'ablecloud-matrix-local-sdk-v2.0.6-8-g41d49e8-release', ext: 'aar')
+    compile(name: 'ablecloud-matrix-app-sdk-v2.1.0-release', ext: 'aar')
+    compile(name: 'ablecloud-matrix-local-sdk-v2.1.0-release', ext: 'aar')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
