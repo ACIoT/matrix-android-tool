@@ -1,9 +1,15 @@
 <resources>
     <string name="app_name">MatrixTool</string>
+
+    <string name="public_service">公有云</string>
+    <string name="private_service">私有云</string>
+
     <string name="main_domain">主域名称</string>
     <string name="main_domain_id">主域ID</string>
     <string name="mode">云服务模式</string>
     <string name="region">云服务区域</string>
+    <string name="router_address">云服务Router</string>
+    <string name="gateway_address">云服务Gateway</string>
 
     <string name="local">局域网</string>
 

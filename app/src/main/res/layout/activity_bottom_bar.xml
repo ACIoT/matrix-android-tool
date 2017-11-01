@@ -16,7 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="54dp"
         app:itemBackground="@color/colorPrimary"
-        app:itemTextColor="@color/bottom_bar_indicator_color"
-        app:itemIconTint="@color/bottom_bar_indicator_color"
+        app:itemTextColor="@color/indicator_color"
+        app:itemIconTint="@color/indicator_color"
         app:menu="@menu/bottom_tab" />
 </LinearLayout>

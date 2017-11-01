@@ -1,11 +1,11 @@
 package ablecloud.matrix.tool;
 
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
+import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -16,6 +16,7 @@ import android.widget.Spinner;
 import ablecloud.matrix.app.Matrix;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.OnItemSelected;
 import butterknife.Unbinder;
 
@@ -23,81 +24,48 @@ import butterknife.Unbinder;
  * Created by wangkun on 30/09/2017.
  */
 
-public class WelcomeActivity extends Activity {
+public class WelcomeActivity extends ContainerActivity {
 
-    @BindView(android.R.id.text1)
-    EditText mainDomain;
+    private TabLayout tablayout;
 
-    @BindView(android.R.id.text2)
-    EditText mainDomainId;
-
-    @BindView(R.id.mode)
-    Spinner modeSpinner;
-
-    @BindView(R.id.region)
-    Spinner regionSpinner;
-
-    private AlertDialog initDialog;
-    private Mode mode;
-    private Region region;
-    private Unbinder unbinder;
-    private ArrayAdapter<Mode> modeAdapter;
-    private ArrayAdapter<Region> regionAdapter;
+    @Override
+    protected int getContentLayout() {
+        return R.layout.activity_welcome;
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         if (MainApplication.isInited()) {
             startActivity(new Intent(this, MainActivity.class));
             finish();
             return;
         }
 
-        View dialogLayout = getLayoutInflater().inflate(R.layout.dialog_init, (ViewGroup) getWindow().getDecorView(), false);
-        unbinder = ButterKnife.bind(this, dialogLayout);
+        super.onCreate(savedInstanceState);
+        tablayout = ButterKnife.findById(this, R.id.tablayout);
+        tablayout.addTab(tablayout.newTab().setText(R.string.public_service));
+        tablayout.addTab(tablayout.newTab().setText(R.string.private_service));
+        tablayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                if (tab.getPosition() == 0) {
+                    replaceFragment(PublicFragment.class, false);
+                } else {
+                    replaceFragment(PrivateFragment.class, false);
+                }
+            }
 
-        modeAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
-        modeAdapter.addAll(Mode.values());
-        modeSpinner.setAdapter(modeAdapter);
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
 
-        regionAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
-        regionAdapter.addAll(Region.values());
-        regionSpinner.setAdapter(regionAdapter);
+            }
 
-        initDialog = new AlertDialog.Builder(this)
-                .setTitle("初始化")
-                .setView(dialogLayout)
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        ((MainApplication) getApplication()).init(mainDomain.getText().toString(),
-                                Long.valueOf(mainDomainId.getText().toString()), mode.value, region.value);
-                        startActivity(new Intent(WelcomeActivity.this, MainActivity.class));
-                        finish();
-                    }
-                })
-                .setCancelable(false)
-                .create();
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
 
-        initDialog.show();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (unbinder != null) unbinder.unbind();
-    }
-
-    @OnItemSelected({R.id.mode, R.id.region})
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        switch (parent.getId()) {
-            case R.id.mode:
-                mode = position >= 0 ? modeAdapter.getItem(position) : null;
-                break;
-            case R.id.region:
-                region = position >= 0 ? regionAdapter.getItem(position) : null;
-                break;
-        }
+            }
+        });
+        addFragment(PublicFragment.class);
     }
 
     private enum Mode {
@@ -121,6 +89,116 @@ public class WelcomeActivity extends Activity {
 
         Region(int value) {
             this.value = value;
+        }
+    }
+
+    public static class PublicFragment extends Fragment {
+        private Mode mode;
+        private Region region;
+        private ArrayAdapter<Mode> modeAdapter;
+        private ArrayAdapter<Region> regionAdapter;
+
+        @Override
+        public void onCreate(@Nullable Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            modeAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1);
+            modeAdapter.addAll(Mode.values());
+            regionAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1);
+            regionAdapter.addAll(Region.values());
+        }
+
+        @BindView(android.R.id.text1)
+        EditText mainDomain;
+
+        @BindView(android.R.id.text2)
+        EditText mainDomainId;
+
+        @BindView(R.id.mode)
+        Spinner modeSpinner;
+
+        @BindView(R.id.region)
+        Spinner regionSpinner;
+
+        private Unbinder unbinder;
+
+        @Nullable
+        @Override
+        public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+            View view = inflater.inflate(R.layout.fragment_public, container, false);
+            unbinder = ButterKnife.bind(this, view);
+            modeSpinner.setAdapter(modeAdapter);
+            modeSpinner.setSelection(1);
+            regionSpinner.setAdapter(regionAdapter);
+            regionSpinner.setSelection(1);
+            return view;
+        }
+
+        @Override
+        public void onDestroyView() {
+            super.onDestroyView();
+            unbinder.unbind();
+        }
+
+        @OnItemSelected({R.id.mode, R.id.region})
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            switch (parent.getId()) {
+                case R.id.mode:
+                    mode = position >= 0 ? modeAdapter.getItem(position) : null;
+                    break;
+                case R.id.region:
+                    region = position >= 0 ? regionAdapter.getItem(position) : null;
+                    break;
+            }
+        }
+
+        @OnClick(android.R.id.button1)
+        public void onClick(View v) {
+            ((MainApplication) getActivity().getApplication()).init(mainDomain.getText().toString(),
+                    Long.valueOf(mainDomainId.getText().toString()), mode.value, region.value);
+            startActivity(new Intent(getActivity(), MainActivity.class));
+            getActivity().finish();
+        }
+    }
+
+    public static class PrivateFragment extends Fragment {
+
+        @BindView(android.R.id.text1)
+        EditText mainDomain;
+
+        @BindView(android.R.id.text2)
+        EditText mainDomainId;
+
+        @BindView(R.id.router)
+        EditText router;
+
+        @BindView(R.id.gateway)
+        EditText gateway;
+
+        private Unbinder unbinder;
+
+        @Nullable
+        @Override
+        public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+            View view = inflater.inflate(R.layout.fragment_private, container, false);
+            unbinder = ButterKnife.bind(this, view);
+            return view;
+        }
+
+        @Override
+        public void onDestroyView() {
+            super.onDestroyView();
+            unbinder.unbind();
+        }
+
+        @OnClick(android.R.id.button1)
+        public void onClick(View v) {
+            ((MainApplication) getActivity().getApplication()).init(
+                    mainDomain.getText().toString(),
+                    Long.valueOf(mainDomainId.getText().toString()),
+                    router.getText().toString(),
+                    gateway.getText().toString());
+            startActivity(new Intent(getActivity(), MainActivity.class));
+            getActivity().finish();
         }
     }
 }
