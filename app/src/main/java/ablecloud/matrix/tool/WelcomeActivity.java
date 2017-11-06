@@ -35,13 +35,13 @@ public class WelcomeActivity extends ContainerActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         if (MainApplication.isInited()) {
             startActivity(new Intent(this, MainActivity.class));
             finish();
             return;
         }
 
-        super.onCreate(savedInstanceState);
         tablayout = ButterKnife.findById(this, R.id.tablayout);
         tablayout.addTab(tablayout.newTab().setText(R.string.public_service));
         tablayout.addTab(tablayout.newTab().setText(R.string.private_service));
