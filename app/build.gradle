@@ -14,7 +14,7 @@ android {
     buildToolsVersion "26.0.2"
     defaultConfig {
         applicationId "ablecloud.matrix.tool"
-        minSdkVersion 21
+        minSdkVersion 19
         targetSdkVersion 25
         versionCode 210
         versionName "2.1.0"

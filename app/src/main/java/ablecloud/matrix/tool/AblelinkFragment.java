@@ -1,9 +1,9 @@
 package ablecloud.matrix.tool;
 
 import android.app.Fragment;
-import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
@@ -19,8 +19,12 @@ import java.util.concurrent.TimeUnit;
 
 import ablecloud.matrix.MatrixCallback;
 import ablecloud.matrix.MatrixError;
+import ablecloud.matrix.MatrixReceiver;
+import ablecloud.matrix.activator.DeviceActivator;
 import ablecloud.matrix.activator.DeviceType;
+import ablecloud.matrix.local.AbleLinkingFind;
 import ablecloud.matrix.local.LocalDevice;
+import ablecloud.matrix.local.LocalDeviceManager;
 import ablecloud.matrix.local.MatrixLocal;
 import ablecloud.matrix.util.NetworkUtils;
 import ablecloud.matrix.util.UiUtils;
@@ -29,7 +33,14 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnItemSelected;
 import butterknife.Unbinder;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.PublishSubject;
 
 /**
  * Created by wangkun on 17/08/2017.
@@ -52,15 +63,13 @@ public class AblelinkFragment extends Fragment {
     TextView log;
 
     private DeviceType deviceType;
-    private ProgressDialog progressDialog;
+    private Snackbar progressSnack;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ActionBar actionBar = UiUtils.getSupportActionBar(this);
         actionBar.setSubtitle(getString(R.string.ablelink) + " Id: " + MainApplication.getMainDomainId());
-        progressDialog = new ProgressDialog(getActivity());
-        progressDialog.setCancelable(false);
     }
 
     @Override
@@ -83,6 +92,10 @@ public class AblelinkFragment extends Fragment {
         typeSpinner.setAdapter(typeAdapter);
 
         log.setMovementMethod(new ScrollingMovementMethod());
+
+        progressSnack = Snackbar.make(view, "", Snackbar.LENGTH_INDEFINITE);
+        Snackbar.SnackbarLayout snackbarLayout = (Snackbar.SnackbarLayout) progressSnack.getView();
+        LayoutInflater.from(snackbarLayout.getContext()).inflate(R.layout.snack_progress, snackbarLayout);
         return view;
     }
 
@@ -99,40 +112,73 @@ public class AblelinkFragment extends Fragment {
 
     @OnClick(R.id.start_link)
     public void onClick(View v) {
-        progressDialog.show();
-        MatrixLocal.localDeviceManager().startAblelink(deviceType,
-                NetworkUtils.getSSID(getActivity()), password.getText().toString(), (int) TimeUnit.MINUTES.toMillis(1), new MatrixCallback<LocalDevice>() {
+        final int timeout_ms = (int) TimeUnit.MINUTES.toMillis(1);
+        final PublishSubject<LocalDevice> subject = PublishSubject.create();
+        final DeviceActivator deviceActivator = DeviceActivator.of(deviceType);
+        final AbleLinkingFind ableLinkingFind = new AbleLinkingFind(timeout_ms, LocalDeviceManager.DEFAULT_INTERVAL_MS, new MatrixReceiver<LocalDevice>() {
+            @Override
+            public void onReceive(LocalDevice localDevice) {
+                subject.onNext(localDevice);
+            }
+        });
+
+        Observable<LocalDevice> deviceObservable = subject.doOnSubscribe(new Consumer<Disposable>() {
+            @Override
+            public void accept(@NonNull Disposable disposable) throws Exception {
+                deviceActivator.startAbleLink(NetworkUtils.getSSID(getActivity()), password.getText().toString(), timeout_ms);
+                ableLinkingFind.execute(new MatrixCallback<Void>() {
                     @Override
-                    public void success(final LocalDevice localDevice) {
-                        UiUtils.runOnUiThread(new Action() {
-                            @Override
-                            public void run() throws Exception {
-                                if (progressDialog != null) {
-                                    progressDialog.dismiss();
-                                }
-                                if (log != null) {
-                                    log.append(log.length() > 0 ? "\n---\n" : "");
-                                    log.append("ip: " + localDevice.ipAddress + ", physicalDeviceId: " + localDevice.physicalDeviceId + "\n");
-                                }
-                            }
-                        });
+                    public void success(Void aVoid) {
+                        subject.onComplete();
                     }
 
                     @Override
-                    public void error(final MatrixError matrixError) {
-                        UiUtils.runOnUiThread(new Action() {
-                            @Override
-                            public void run() throws Exception {
-                                if (progressDialog != null) {
-                                    progressDialog.dismiss();
-                                }
-                                if (log != null) {
-                                    log.append(log.length() > 0 ? "\n---\n" : "");
-                                    log.append("Ablelink error: " + matrixError.getMessage());
-                                }
-                            }
-                        });
+                    public void error(MatrixError matrixError) {
+                        subject.onError(matrixError);
                     }
                 });
+            }
+        }).doFinally(new Action() {
+            @Override
+            public void run() throws Exception {
+                ableLinkingFind.cancel();
+                deviceActivator.stopAblelink();
+            }
+        }).subscribeOn(Schedulers.io());
+
+        progressSnack.setAction(android.R.string.cancel, new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ableLinkingFind.cancel();
+            }
+        });
+
+        deviceObservable.observeOn(AndroidSchedulers.mainThread()).doOnSubscribe(new Consumer<Disposable>() {
+            @Override
+            public void accept(@NonNull Disposable disposable) throws Exception {
+                progressSnack.show();
+            }
+        }).doFinally(new Action() {
+            @Override
+            public void run() throws Exception {
+                progressSnack.dismiss();
+            }
+        }).subscribe(new Consumer<LocalDevice>() {
+            @Override
+            public void accept(@NonNull LocalDevice localDevice) throws Exception {
+                if (log != null) {
+                    log.append(log.length() > 0 ? "\n---\n" : "");
+                    log.append("ip: " + localDevice.ipAddress + ", physicalDeviceId: " + localDevice.physicalDeviceId + "\n");
+                }
+            }
+        }, new Consumer<Throwable>() {
+            @Override
+            public void accept(@NonNull Throwable throwable) throws Exception {
+                if (log != null) {
+                    log.append(log.length() > 0 ? "\n---\n" : "");
+                    log.append("Ablelink error: " + throwable.getMessage());
+                }
+            }
+        });
     }
 }
