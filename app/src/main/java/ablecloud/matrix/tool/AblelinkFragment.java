@@ -1,9 +1,9 @@
 package ablecloud.matrix.tool;
 
 import android.app.Fragment;
-import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
@@ -63,15 +63,13 @@ public class AblelinkFragment extends Fragment {
     TextView log;
 
     private DeviceType deviceType;
-    private ProgressDialog progressDialog;
+    private Snackbar progressSnack;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ActionBar actionBar = UiUtils.getSupportActionBar(this);
         actionBar.setSubtitle(getString(R.string.ablelink) + " Id: " + MainApplication.getMainDomainId());
-        progressDialog = new ProgressDialog(getActivity());
-        progressDialog.setCancelable(false);
     }
 
     @Override
@@ -94,6 +92,10 @@ public class AblelinkFragment extends Fragment {
         typeSpinner.setAdapter(typeAdapter);
 
         log.setMovementMethod(new ScrollingMovementMethod());
+
+        progressSnack = Snackbar.make(view, "", Snackbar.LENGTH_INDEFINITE);
+        Snackbar.SnackbarLayout snackbarLayout = (Snackbar.SnackbarLayout) progressSnack.getView();
+        LayoutInflater.from(snackbarLayout.getContext()).inflate(R.layout.snack_progress, snackbarLayout);
         return view;
     }
 
@@ -144,15 +146,22 @@ public class AblelinkFragment extends Fragment {
             }
         }).subscribeOn(Schedulers.io());
 
+        progressSnack.setAction(android.R.string.cancel, new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ableLinkingFind.cancel();
+            }
+        });
+
         deviceObservable.observeOn(AndroidSchedulers.mainThread()).doOnSubscribe(new Consumer<Disposable>() {
             @Override
             public void accept(@NonNull Disposable disposable) throws Exception {
-                progressDialog.show();
+                progressSnack.show();
             }
         }).doFinally(new Action() {
             @Override
             public void run() throws Exception {
-                progressDialog.cancel();
+                progressSnack.dismiss();
             }
         }).subscribe(new Consumer<LocalDevice>() {
             @Override
