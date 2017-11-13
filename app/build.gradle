@@ -9,6 +9,15 @@ if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
 
+def getGitVersionName = { ->
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'describe', '--tags'
+        standardOutput = stdout
+    }
+    return stdout.toString().trim()
+}
+
 android {
     compileSdkVersion 26
     buildToolsVersion "26.0.2"
@@ -18,7 +27,7 @@ android {
         targetSdkVersion 25
         versionCode 210
         versionName "2.1.0"
-        setProperty("archivesBaseName", "${project.getParent().getName()}-${versionName}")
+        setProperty("archivesBaseName", "${project.getParent().getName()}-${getGitVersionName}")
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
