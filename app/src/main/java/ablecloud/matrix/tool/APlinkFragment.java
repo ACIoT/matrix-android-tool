@@ -162,7 +162,7 @@ public class APlinkFragment extends Fragment {
                 .doOnSubscribe(new Consumer<Disposable>() {
                     @Override
                     public void accept(@NonNull Disposable disposable) throws Exception {
-                        progressSnack.setText(R.string.ap_linking);
+                        progressSnack.setText(R.string.sending_ssid_pwd);
                         progressSnack.show();
                     }
                 })
@@ -175,7 +175,7 @@ public class APlinkFragment extends Fragment {
                 .subscribe(new Consumer<Boolean>() {
                     @Override
                     public void accept(@NonNull Boolean success) throws Exception {
-                        UiUtils.toast(getActivity(), getString(R.string.ap_link_success));
+                        UiUtils.toast(getActivity(), getString(R.string.send_success));
                         getActivity().finish();
                     }
                 }, new Consumer<Throwable>() {

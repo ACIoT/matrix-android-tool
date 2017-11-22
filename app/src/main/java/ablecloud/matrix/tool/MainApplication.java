@@ -87,4 +87,11 @@ public class MainApplication extends Application {
                 .apply();
         Matrix.init(this, privateConfiguration);
     }
+
+    public void cleanCache() {
+        preferences
+                .edit()
+                .clear()
+                .commit();
+    }
 }

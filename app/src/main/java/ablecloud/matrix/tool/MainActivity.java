@@ -201,6 +201,10 @@ public class MainActivity extends ContainerActivity {
                     Preferator.launch(getActivity());
                     getActivity().finish();
                     return true;
+                case "cleanCache":
+                    ((MainApplication) getActivity().getApplication()).cleanCache();
+                    android.os.Process.killProcess(android.os.Process.myPid());
+                    return true;
             }
             return super.onPreferenceTreeClick(preferenceScreen, preference);
         }

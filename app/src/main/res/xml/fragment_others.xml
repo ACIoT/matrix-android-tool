@@ -3,4 +3,7 @@
     <Preference
         android:key="settings"
         android:title="@string/settings" />
+    <Preference
+        android:key="cleanCache"
+        android:title="@string/clean_cache" />
 </PreferenceScreen>
