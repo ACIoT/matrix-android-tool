@@ -68,4 +68,10 @@
     <string name="sign_out_success">登出成功</string>
     <string name="login_first">请先登录</string>
     <string name="who_login">登录（%1$s）</string>
+    <string name="get_wifi_list">点击获取设备可连WIFI列表</string>
+    <string name="wifi_list">设备可连WIFI列表</string>
+    <string name="input_wifi_pwd">请输入密码</string>
+    <string name="ap_link_success">AP配网成功</string>
+    <string name="loading_available_wifi_list">正在获取设备可连WIFI列表</string>
+    <string name="ap_linking">正在进行AP配网</string>
 </resources>
