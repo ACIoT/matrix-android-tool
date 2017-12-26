@@ -23,10 +23,10 @@ android {
     buildToolsVersion "26.0.2"
     defaultConfig {
         applicationId "ablecloud.matrix.tool"
-        minSdkVersion 21
+        minSdkVersion 19
         targetSdkVersion 25
-        versionCode 211
-        versionName "2.1.1"
+        versionCode 212
+        versionName "2.1.2"
         setProperty("archivesBaseName", "${project.getParent().getName()}-${getGitVersionName}")
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
