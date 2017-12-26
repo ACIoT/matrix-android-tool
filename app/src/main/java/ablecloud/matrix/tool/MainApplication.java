@@ -3,8 +3,8 @@ package ablecloud.matrix.tool;
 import android.app.Application;
 import android.content.SharedPreferences;
 
-import ablecloud.matrix.app.Configuration;
 import ablecloud.matrix.app.Matrix;
+import ablecloud.matrix.service.Configuration;
 
 /**
  * Created by wangkun on 02/08/2017.

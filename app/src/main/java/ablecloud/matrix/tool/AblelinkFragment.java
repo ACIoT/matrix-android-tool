@@ -125,7 +125,7 @@ public class AblelinkFragment extends Fragment {
         Observable<LocalDevice> deviceObservable = subject.doOnSubscribe(new Consumer<Disposable>() {
             @Override
             public void accept(@NonNull Disposable disposable) throws Exception {
-                deviceActivator.startAbleLink(NetworkUtils.getSSID(getActivity()), password.getText().toString(), timeout_ms);
+                deviceActivator.startSmartConfig(NetworkUtils.getSSID(getActivity()), password.getText().toString(), timeout_ms);
                 ableLinkingFind.execute(new MatrixCallback<Void>() {
                     @Override
                     public void success(Void aVoid) {
@@ -142,7 +142,7 @@ public class AblelinkFragment extends Fragment {
             @Override
             public void run() throws Exception {
                 ableLinkingFind.cancel();
-                deviceActivator.stopAblelink();
+                deviceActivator.stopSmartConfig();
             }
         }).subscribeOn(Schedulers.io());
 

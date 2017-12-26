@@ -13,7 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 
-import ablecloud.matrix.app.Matrix;
+import ablecloud.matrix.service.MatrixConfiguration;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -69,8 +69,9 @@ public class WelcomeActivity extends ContainerActivity {
     }
 
     private enum Mode {
-        TEST_MODE(Matrix.TEST_MODE),
-        PRODUCTION_MODE(Matrix.PRODUCTION_MODE);
+        SANDBOX_MODE(-1),
+        TEST_MODE(MatrixConfiguration.TEST_MODE),
+        PRODUCTION_MODE(MatrixConfiguration.PRODUCTION_MODE);
 
         private int value;
 
@@ -80,10 +81,10 @@ public class WelcomeActivity extends ContainerActivity {
     }
 
     private enum Region {
-        REGION_CHINA(Matrix.REGION_CHINA),
-        REGION_SOUTHEAST_ASIA(Matrix.REGION_SOUTHEAST_ASIA),
-        REGION_NORTH_AMERICA(Matrix.REGION_NORTH_AMERICA),
-        REGION_CENTRAL_EUROPE(Matrix.REGION_CENTRAL_EUROPE);
+        REGION_CHINA(MatrixConfiguration.REGION_CHINA),
+        REGION_SOUTHEAST_ASIA(MatrixConfiguration.REGION_SOUTHEAST_ASIA),
+        REGION_NORTH_AMERICA(MatrixConfiguration.REGION_NORTH_AMERICA),
+        REGION_CENTRAL_EUROPE(MatrixConfiguration.REGION_CENTRAL_EUROPE);
 
         private int value;
 
