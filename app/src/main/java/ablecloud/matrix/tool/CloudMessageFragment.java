@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
 import android.text.method.ScrollingMovementMethod;
-import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +14,6 @@ import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.regex.Pattern;
 
 import ablecloud.matrix.DeviceMessage;
 import ablecloud.matrix.MatrixCallback;
@@ -40,7 +38,6 @@ import okio.ByteString;
 public class CloudMessageFragment extends DeviceFragment {
 
     private static final SimpleDateFormat FORMAT = new SimpleDateFormat("HH:mm:ss.SSS");
-    private static final Pattern LINKIFY_HEX = Pattern.compile("(^|\\s+)([\\da-fA-F]{2})+($|\\s+)");
 
     @BindView(R.id.msgCode)
     EditText msgCode;
@@ -74,7 +71,6 @@ public class CloudMessageFragment extends DeviceFragment {
     public void onTextChanged(CharSequence s, int start, int before, int count) {
         if (before != count) {
             cursor = start + count;
-            Linkify.addLinks(request, LINKIFY_HEX, null);
         } else {
             request.setSelection(cursor);
         }
@@ -98,7 +94,6 @@ public class CloudMessageFragment extends DeviceFragment {
                         log.append(log.length() > 0 ? "\n---\n" : "");
                         log.append(formatTime(requestTime) + ": Send: " + requestMessage + "\n");
                         log.append(formatTime(System.currentTimeMillis()) + ": Receive: " + ByteString.of(bytes).hex());
-                        Linkify.addLinks(log, LINKIFY_HEX, null);
                     }
                 });
             }
