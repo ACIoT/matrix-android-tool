@@ -190,17 +190,11 @@ public class LocalScanFragment extends Fragment {
             convertView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ensureLoginAndBind(localDevice, new Consumer<Device>() {
-                        @Override
-                        public void accept(@io.reactivex.annotations.NonNull Device device) throws Exception {
-                            Bundle arguments = new Bundle();
-                            arguments.putString("subDomain", device.subDomainName);
-                            arguments.putString("physicalDeviceId", device.physicalDeviceId);
-                            LocalMessageFragment localMessageFragment = new LocalMessageFragment();
-                            localMessageFragment.setArguments(arguments);
-                            ((FunctionActivity) getContext()).replaceFragment(localMessageFragment);
-                        }
-                    });
+                    Bundle arguments = new Bundle();
+                    arguments.putString("physicalDeviceId", localDevice.physicalDeviceId);
+                    LocalMessageFragment localMessageFragment = new LocalMessageFragment();
+                    localMessageFragment.setArguments(arguments);
+                    ((FunctionActivity) getContext()).replaceFragment(localMessageFragment);
                 }
             });
             return convertView;

@@ -50,13 +50,11 @@ public class LocalMessageFragment extends Fragment {
     @BindView(R.id.log)
     TextView log;
     Unbinder unbinder;
-    private String subDomain;
     private String physicalDeviceId;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        subDomain = getArguments().getString("subDomain");
         physicalDeviceId = getArguments().getString("physicalDeviceId");
     }
 
@@ -93,7 +91,7 @@ public class LocalMessageFragment extends Fragment {
             return;
         }
         DeviceMessage deviceMessage = new DeviceMessage(Integer.parseInt(msgCode), ByteString.decodeHex(requestMessage).toByteArray());
-        Matrix.bindManager().sendDevice(subDomain, physicalDeviceId, BindManager.Mode.LOCAL_ONLY, deviceMessage, new MatrixCallback<DeviceMessage>() {
+        Matrix.bindManager().sendDevice("notEmpty", physicalDeviceId, BindManager.Mode.LOCAL_ONLY, deviceMessage, new MatrixCallback<DeviceMessage>() {
             @Override
             public void success(DeviceMessage deviceMessage) {
                 Single.just(deviceMessage.getContent()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<byte[]>() {
