@@ -89,6 +89,7 @@ public class MainApplication extends Application {
     }
 
     public void cleanCache() {
+        Matrix.accountManager().logout();
         preferences
                 .edit()
                 .clear()
