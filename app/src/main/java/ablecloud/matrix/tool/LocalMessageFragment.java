@@ -19,6 +19,7 @@ import java.util.Date;
 import ablecloud.matrix.DeviceMessage;
 import ablecloud.matrix.MatrixCallback;
 import ablecloud.matrix.MatrixError;
+import ablecloud.matrix.MatrixMessage;
 import ablecloud.matrix.app.BindManager;
 import ablecloud.matrix.app.Matrix;
 import ablecloud.matrix.util.UiUtils;
@@ -87,10 +88,10 @@ public class LocalMessageFragment extends Fragment {
             Toast.makeText(getActivity(), "msgCode和payload均不能为空", Toast.LENGTH_SHORT).show();
             return;
         }
-        DeviceMessage deviceMessage = new DeviceMessage(Integer.parseInt(msgCode), ByteString.decodeHex(requestMessage).toByteArray());
-        Matrix.bindManager().sendDevice("notEmpty", physicalDeviceId, BindManager.Mode.LOCAL_ONLY, deviceMessage, new MatrixCallback<DeviceMessage>() {
+        MatrixMessage deviceMessage = new MatrixMessage(Integer.parseInt(msgCode), ByteString.decodeHex(requestMessage).toByteArray());
+        Matrix.bindManager().sendDevice("notEmpty", physicalDeviceId, BindManager.Mode.LOCAL_ONLY, deviceMessage, new MatrixCallback<MatrixMessage>() {
             @Override
-            public void success(DeviceMessage deviceMessage) {
+            public void success(MatrixMessage deviceMessage) {
                 Single.just(deviceMessage.getContent()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<byte[]>() {
                     @Override
                     public void accept(@NonNull byte[] bytes) throws Exception {

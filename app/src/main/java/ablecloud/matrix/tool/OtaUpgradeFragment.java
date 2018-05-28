@@ -11,9 +11,8 @@ import android.widget.TextView;
 import ablecloud.matrix.MatrixCallback;
 import ablecloud.matrix.MatrixError;
 import ablecloud.matrix.app.Matrix;
-import ablecloud.matrix.app.OTAManager;
 import ablecloud.matrix.model.UpgradeRequest;
-import ablecloud.matrix.model.VersionRequest;
+import ablecloud.matrix.model.VersionQuery;
 import ablecloud.matrix.model.VersionResponse;
 import ablecloud.matrix.util.UiUtils;
 import butterknife.BindView;
@@ -51,27 +50,27 @@ public class OtaUpgradeFragment extends DeviceFragment {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.checkVersionMcu:
-                checkVersion(OTAManager.TYPE_MCU);
+                checkVersion(VersionQuery.TYPE_MCU);
                 break;
             case R.id.confirmUpgradeMcu:
-                confirmUpgrade(OTAManager.TYPE_MCU);
+                confirmUpgrade(VersionQuery.TYPE_MCU);
                 break;
             case R.id.checkVersionWifi:
-                checkVersion(OTAManager.TYPE_WIFI);
+                checkVersion(VersionQuery.TYPE_WIFI);
                 break;
             case R.id.confirmUpgradeWifi:
-                confirmUpgrade(OTAManager.TYPE_WIFI);
+                confirmUpgrade(VersionQuery.TYPE_WIFI);
                 break;
         }
     }
 
     private void checkVersion(final int otaType) {
-        VersionRequest versionRequest = new VersionRequest(device.subDomainName, device.deviceId, otaType);
+        VersionQuery versionRequest = new VersionQuery(device.subDomainName, otaType);
         log("checkVersion: " + device.physicalDeviceId);
         Matrix.otaManager().checkVersion(versionRequest, new MatrixCallback<VersionResponse>() {
             @Override
             public void success(VersionResponse versionResponse) {
-                String type = otaType == OTAManager.TYPE_MCU ? "MCU" : "WIFI";
+                String type = otaType == VersionQuery.TYPE_MCU ? "MCU" : "WIFI";
                 final StringBuilder builder = new StringBuilder();
                 builder.append("OTA type: " + type + ", ");
                 boolean hasUpgrade = versionResponse.hasUpgrade();

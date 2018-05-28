@@ -15,9 +15,9 @@ import android.widget.Toast;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import ablecloud.matrix.DeviceMessage;
 import ablecloud.matrix.MatrixCallback;
 import ablecloud.matrix.MatrixError;
+import ablecloud.matrix.MatrixMessage;
 import ablecloud.matrix.app.BindManager;
 import ablecloud.matrix.app.Matrix;
 import ablecloud.matrix.util.UiUtils;
@@ -85,29 +85,30 @@ public class CloudMessageFragment extends DeviceFragment {
             Toast.makeText(getActivity(), "msgCode和payload均不能为空", Toast.LENGTH_SHORT).show();
             return;
         }
-        Matrix.bindManager().sendDevice(device.subDomainName, device.physicalDeviceId, BindManager.Mode.CLOUD_ONLY, new DeviceMessage(Integer.parseInt(this.msgCode.getText().toString().trim()), ByteString.decodeHex(requestMessage).toByteArray()), new MatrixCallback<DeviceMessage>() {
-            @Override
-            public void success(DeviceMessage deviceMessage) {
-                Single.just(deviceMessage.getContent()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<byte[]>() {
+        Matrix.bindManager()
+                .sendDevice(device.subDomainName, device.physicalDeviceId, BindManager.Mode.CLOUD_ONLY, new MatrixMessage(Integer.parseInt(this.msgCode.getText().toString().trim()), ByteString.decodeHex(requestMessage).toByteArray()), new MatrixCallback<MatrixMessage>() {
                     @Override
-                    public void accept(@NonNull byte[] bytes) throws Exception {
-                        log.append(log.length() > 0 ? "\n---\n" : "");
-                        log.append(formatTime(requestTime) + ": Send: " + requestMessage + "\n");
-                        log.append(formatTime(System.currentTimeMillis()) + ": Receive: " + ByteString.of(bytes).hex());
+                    public void success(MatrixMessage deviceMessage) {
+                        Single.just(deviceMessage.getContent()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<byte[]>() {
+                            @Override
+                            public void accept(@NonNull byte[] bytes) throws Exception {
+                                log.append(log.length() > 0 ? "\n---\n" : "");
+                                log.append(formatTime(requestTime) + ": Send: " + requestMessage + "\n");
+                                log.append(formatTime(System.currentTimeMillis()) + ": Receive: " + ByteString.of(bytes).hex());
+                            }
+                        });
                     }
-                });
-            }
 
-            @Override
-            public void error(MatrixError matrixError) {
-                Single.just(matrixError).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<MatrixError>() {
                     @Override
-                    public void accept(@NonNull MatrixError matrixError) throws Exception {
-                        Toast.makeText(getActivity(), matrixError.getMessage(), Toast.LENGTH_SHORT).show();
+                    public void error(MatrixError matrixError) {
+                        Single.just(matrixError).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<MatrixError>() {
+                            @Override
+                            public void accept(@NonNull MatrixError matrixError) throws Exception {
+                                Toast.makeText(getActivity(), matrixError.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     }
                 });
-            }
-        });
     }
 
     private String formatTime(long time) {

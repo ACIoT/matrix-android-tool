@@ -38,6 +38,16 @@ public class MainApplication extends Application {
         }
 
         @Override
+        public String getRedirectAddress() {
+            return null;
+        }
+
+        @Override
+        public String getRegionDes() {
+            return null;
+        }
+
+        @Override
         public long getDomainId() {
             return getMainDomainId();
         }
