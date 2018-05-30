@@ -84,6 +84,12 @@ public class MainActivity extends ContainerActivity {
                 case "local_scan":
                     FunctionActivity.showFragment(getActivity(), LocalScanFragment.class.getName(), title);
                     return true;
+                case "global_able_link":
+                    FunctionActivity.showFragment(getActivity(), I18NAblelinkFragment.class.getName(), title);
+                    return true;
+                case "global_ap_link":
+                    FunctionActivity.showFragment(getActivity(), I18NAPlinkFragment.class.getName(), title);
+                    return true;
             }
             return super.onPreferenceTreeClick(preferenceScreen, preference);
         }

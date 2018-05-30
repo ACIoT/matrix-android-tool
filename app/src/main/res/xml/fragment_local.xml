@@ -9,4 +9,10 @@
     <Preference
         android:key="local_scan"
         android:title="@string/local_scan" />
+    <Preference
+        android:key="global_able_link"
+        android:title="@string/global_able_link" />
+    <Preference
+        android:key="global_ap_link"
+        android:title="@string/global_ap_link" />
 </PreferenceScreen>

@@ -76,4 +76,7 @@
     <string name="sending_ssid_pwd">正在发送ssid和密码</string>
     <string name="clean_cache">清除缓存</string>
     <string name="global">国际化</string>
+    <string name="global_able_link">国际化智能配网</string>
+    <string name="global_ap_link">国际化AP配网</string>
+
 </resources>
