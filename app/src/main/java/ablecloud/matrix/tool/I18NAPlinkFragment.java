@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -20,7 +21,9 @@ import java.util.List;
 
 import ablecloud.matrix.MatrixCallback;
 import ablecloud.matrix.MatrixError;
-import ablecloud.matrix.local.LocalDeviceManager;
+import ablecloud.matrix.app.Matrix;
+import ablecloud.matrix.local.APModeNetConfigManager;
+import ablecloud.matrix.local.LocalDevice;
 import ablecloud.matrix.local.MatrixLocal;
 import ablecloud.matrix.local.MatrixWifiInfo;
 import ablecloud.matrix.util.MatrixUtils;
@@ -32,11 +35,15 @@ import butterknife.Unbinder;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Single;
+import io.reactivex.SingleEmitter;
+import io.reactivex.SingleOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by liuxiaofeng on 2017/11/14.
@@ -46,17 +53,25 @@ public class I18NAPlinkFragment extends Fragment {
 
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
+    @BindView(R.id.bt_online)
+    Button bt_online;
+    @BindView(R.id.tv_device_info)
+    TextView tv_device_info;
+    @BindView(R.id.et_subdomin)
+    EditText et_subdomin;
+
     private WifiListAdapter wifiListAdapter;
     public static final int LOCAL_TIMEOUT_MS = 8000;
     private static final int APLINK_DEFAULT_TIMEOUT_MS = 60 * 1000;
-    private LocalDeviceManager manager = MatrixLocal.localDeviceManager();
+    private APModeNetConfigManager manager = MatrixLocal.apModeNetConfigManager();
     private Snackbar progressSnack;
     Unbinder unbinder;
+    private LocalDevice mSLocalDevice;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_aplink, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_aplink_i18n, container, false);
         unbinder = ButterKnife.bind(this, rootView);
         progressSnack = Snackbar.make(rootView, "", Snackbar.LENGTH_INDEFINITE);
         Snackbar.SnackbarLayout snackbarLayout = (Snackbar.SnackbarLayout) progressSnack.getView();
@@ -87,13 +102,63 @@ public class I18NAPlinkFragment extends Fragment {
         unbinder.unbind();
     }
 
-    @OnClick(R.id.get_wifi_list)
-    public void onViewClicked() {
+    @OnClick({R.id.get_wifi_list, R.id.bt_online})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.get_wifi_list:
+                getWiFiList();
+                break;
+            case R.id.bt_online:
+                checkOnline();
+                break;
+        }
+    }
+
+    private void checkOnline() {
+        if (mSLocalDevice == null) {
+            UiUtils.toast(getActivity(), "没有可用设备");
+            return;
+        }
+
+        if (et_subdomin.getText() == null) {
+            UiUtils.toast(getActivity(), "subDomin不可为空");
+            return;
+        }
+        Disposable subscribe = Single.create(new SingleOnSubscribe<Boolean>() {
+            @Override
+            public void subscribe(final SingleEmitter<Boolean> e) throws Exception {
+                Matrix.bindManager().getOnlineStatus(mSLocalDevice.physicalDeviceId, et_subdomin.getText().toString().trim(), new MatrixCallback<Boolean>() {
+                    @Override
+                    public void success(Boolean aBoolean) {
+                        e.onSuccess(aBoolean);
+                    }
+
+                    @Override
+                    public void error(MatrixError matrixError) {
+                        e.onError(matrixError);
+                    }
+                });
+            }
+        }).subscribeOn(Schedulers.newThread())
+                .subscribe(new Consumer<Boolean>() {
+                    @Override
+                    public void accept(Boolean aBoolean) throws Exception {
+                        UiUtils.toast(getActivity(), aBoolean ? "在线" : "离线");
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        UiUtils.toast(getActivity(), throwable.getMessage());
+                    }
+                });
+    }
+
+    private void getWiFiList() {
         Observable
                 .create(new ObservableOnSubscribe<List<MatrixWifiInfo>>() {
                     @Override
                     public void subscribe(final ObservableEmitter<List<MatrixWifiInfo>> e) throws Exception {
-                        manager.getWifiFromAP(LOCAL_TIMEOUT_MS, new MatrixCallback<List<MatrixWifiInfo>>() {
+                        manager.getWififromDevice(LOCAL_TIMEOUT_MS, new MatrixCallback<List<MatrixWifiInfo>>() {
                             @Override
                             public void success(List<MatrixWifiInfo> matrixWifiInfos) {
                                 e.onNext(matrixWifiInfos);
@@ -142,13 +207,13 @@ public class I18NAPlinkFragment extends Fragment {
         MatrixUtils.assertNotEmpty(getActivity(), "ssid", ssid);
         MatrixUtils.assertNotEmpty(getActivity(), "wifiPwd", wifiPwd);
         Observable
-                .create(new ObservableOnSubscribe<Boolean>() {
+                .create(new ObservableOnSubscribe<LocalDevice>() {
                     @Override
-                    public void subscribe(final ObservableEmitter<Boolean> e) throws Exception {
-                        manager.setWifiToAP(ssid, wifiPwd, APLINK_DEFAULT_TIMEOUT_MS, new MatrixCallback<Void>() {
+                    public void subscribe(final ObservableEmitter<LocalDevice> e) throws Exception {
+                        manager.setWifiToAP(ssid, wifiPwd, APLINK_DEFAULT_TIMEOUT_MS, new MatrixCallback<LocalDevice>() {
                             @Override
-                            public void success(Void aVoid) {
-                                e.onNext(true);
+                            public void success(LocalDevice localDevice) {
+                                e.onNext(localDevice);
                                 e.onComplete();
                             }
 
@@ -172,10 +237,11 @@ public class I18NAPlinkFragment extends Fragment {
                         progressSnack.dismiss();
                     }
                 })
-                .subscribe(new Consumer<Boolean>() {
+                .subscribe(new Consumer<LocalDevice>() {
                     @Override
-                    public void accept(@NonNull Boolean success) throws Exception {
-                        UiUtils.toast(getActivity(), getString(R.string.send_success));
+                    public void accept(@NonNull LocalDevice sLocalDevice) throws Exception {
+                        mSLocalDevice = sLocalDevice;
+                        UiUtils.toast(getActivity(), getString(R.string.send_success) + "/n" + "physicalId:" + sLocalDevice.physicalDeviceId);
                         getActivity().finish();
                     }
                 }, new Consumer<Throwable>() {

@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -19,13 +20,10 @@ import java.util.concurrent.TimeUnit;
 
 import ablecloud.matrix.MatrixCallback;
 import ablecloud.matrix.MatrixError;
-import ablecloud.matrix.MatrixReceiver;
-import ablecloud.matrix.activator.DeviceActivator;
 import ablecloud.matrix.activator.DeviceType;
-import ablecloud.matrix.local.AbleLinkingFind;
 import ablecloud.matrix.local.LocalDevice;
-import ablecloud.matrix.local.LocalDeviceManager;
 import ablecloud.matrix.local.MatrixLocal;
+import ablecloud.matrix.local.SmartModeNetConfigManager;
 import ablecloud.matrix.util.NetworkUtils;
 import ablecloud.matrix.util.UiUtils;
 import butterknife.BindView;
@@ -58,7 +56,8 @@ public class I18NAblelinkFragment extends Fragment {
 
     @BindView(R.id.type_spinner)
     Spinner typeSpinner;
-
+    @BindView(R.id.checkbox)
+    CheckBox mCheckBox;
     @BindView(R.id.log)
     TextView log;
 
@@ -81,7 +80,7 @@ public class I18NAblelinkFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_ablelink, container, false);
+        View view = inflater.inflate(R.layout.fragment_ablelink_i18n, container, false);
         unbinder = ButterKnife.bind(this, view);
 
         ssid.setText(NetworkUtils.getSSID(getActivity()));
@@ -110,25 +109,20 @@ public class I18NAblelinkFragment extends Fragment {
         deviceType = position >= 0 ? DeviceType.values()[position] : null;
     }
 
+
     @OnClick(R.id.start_link)
     public void onClick(View v) {
         final int timeout_ms = (int) TimeUnit.MINUTES.toMillis(1);
         final PublishSubject<LocalDevice> subject = PublishSubject.create();
-        final DeviceActivator deviceActivator = DeviceActivator.of(deviceType);
-        final AbleLinkingFind ableLinkingFind = new AbleLinkingFind(timeout_ms, LocalDeviceManager.DEFAULT_INTERVAL_MS, new MatrixReceiver<LocalDevice>() {
-            @Override
-            public void onReceive(LocalDevice localDevice) {
-                subject.onNext(localDevice);
-            }
-        });
 
         Observable<LocalDevice> deviceObservable = subject.doOnSubscribe(new Consumer<Disposable>() {
             @Override
             public void accept(@NonNull Disposable disposable) throws Exception {
-                deviceActivator.startSmartConfig(NetworkUtils.getSSID(getActivity()), password.getText().toString(), timeout_ms);
-                ableLinkingFind.execute(new MatrixCallback<Void>() {
+
+                MatrixLocal.smartModeNetConfigManager().configNetType(mCheckBox.isChecked() ? SmartModeNetConfigManager.NET.LOCAL : SmartModeNetConfigManager.NET.CLOUD).startAblelink(deviceType, NetworkUtils.getSSID(getActivity()), password.getText().toString(), timeout_ms, new MatrixCallback<LocalDevice>() {
                     @Override
-                    public void success(Void aVoid) {
+                    public void success(LocalDevice localDevice) {
+                        subject.onNext(localDevice);
                         subject.onComplete();
                     }
 
@@ -141,17 +135,10 @@ public class I18NAblelinkFragment extends Fragment {
         }).doFinally(new Action() {
             @Override
             public void run() throws Exception {
-                ableLinkingFind.cancel();
-                deviceActivator.stopSmartConfig();
+                MatrixLocal.smartModeNetConfigManager().stopAbleLink();
             }
         }).subscribeOn(Schedulers.io());
 
-        progressSnack.setAction(android.R.string.cancel, new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ableLinkingFind.cancel();
-            }
-        });
 
         deviceObservable.observeOn(AndroidSchedulers.mainThread()).doOnSubscribe(new Consumer<Disposable>() {
             @Override
