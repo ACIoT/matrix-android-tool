@@ -45,13 +45,17 @@ public class WelcomeActivity extends ContainerActivity {
         tablayout = ButterKnife.findById(this, R.id.tablayout);
         tablayout.addTab(tablayout.newTab().setText(R.string.public_service));
         tablayout.addTab(tablayout.newTab().setText(R.string.private_service));
+        tablayout.addTab(tablayout.newTab().setText(R.string.global));
+
         tablayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 if (tab.getPosition() == 0) {
                     replaceFragment(PublicFragment.class, false);
-                } else {
+                } else if (tab.getPosition() == 1) {
                     replaceFragment(PrivateFragment.class, false);
+                } else {
+                    replaceFragment(I18NFragment.class, false);
                 }
             }
 

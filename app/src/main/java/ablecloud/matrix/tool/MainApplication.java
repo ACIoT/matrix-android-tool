@@ -18,6 +18,8 @@ public class MainApplication extends Application {
     private static final String REGION = "region";
     private static final String ROUTER = "router";
     private static final String GATEWAY = "gateway";
+    private static final String REDIRECT = "redirect";
+    private static final String REGIONID = "regionId";
 
     private static SharedPreferences preferences;
 
@@ -56,13 +58,26 @@ public class MainApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        CrashHandler crashHandler = CrashHandler.getInstance();
+        crashHandler.init(getApplicationContext());
+
         preferences = getSharedPreferences("ablecloud_tool", MODE_PRIVATE);
         if (isInited()) {
-            if (preferences.contains(MODE) && preferences.contains(REGION)) {
-                Matrix.init(this, getMainDomain(), getMainDomainId(),
-                        preferences.getInt(MODE, Integer.MAX_VALUE), preferences.getInt(REGION, Integer.MAX_VALUE));
+            if (preferences.contains(REGIONID)) {
+                Matrix.initI18N(this, getMainDomain()
+                        , getMainDomainId()
+                        , preferences.getString(ROUTER, null)
+                        , preferences.getString(GATEWAY, null)
+                        , preferences.getString(REDIRECT, null)
+                        , preferences.getString(REGIONID, null));
             } else {
-                Matrix.init(this, privateConfiguration);
+                if (preferences.contains(MODE) && preferences.contains(REGION)) {
+                    Matrix.init(this, getMainDomain(), getMainDomainId(),
+                            preferences.getInt(MODE, Integer.MAX_VALUE), preferences.getInt(REGION, Integer.MAX_VALUE));
+                } else {
+                    Matrix.init(this, privateConfiguration);
+                }
             }
         }
     }
@@ -80,6 +95,7 @@ public class MainApplication extends Application {
         return preferences.getLong(MAIN_DOMAIN_ID, 0);
     }
 
+    //公有云
     public void init(String mainDomain, Long mainDomainId, int mode, int region) {
         preferences.edit().putString(MAIN_DOMAIN, mainDomain)
                 .putLong(MAIN_DOMAIN_ID, mainDomainId)
@@ -89,6 +105,7 @@ public class MainApplication extends Application {
         Matrix.init(this, mainDomain, mainDomainId, mode, region);
     }
 
+    //私有云
     public void init(final String mainDomain, final Long mainDomainId, final String router, final String gateway) {
         preferences.edit().putString(MAIN_DOMAIN, mainDomain)
                 .putLong(MAIN_DOMAIN_ID, mainDomainId)
@@ -96,6 +113,21 @@ public class MainApplication extends Application {
                 .putString(GATEWAY, gateway)
                 .apply();
         Matrix.init(this, privateConfiguration);
+    }
+
+    //国际化
+    public void initI18N(final String mainDomain, final Long mainDomainId, final String router, final String gateway, String redirect, String regionId) {
+
+        preferences.edit().putString(MAIN_DOMAIN, mainDomain)
+                .putLong(MAIN_DOMAIN_ID, mainDomainId)
+                .putString(ROUTER, router)
+                .putString(GATEWAY, gateway)
+                .putString(REDIRECT, redirect)
+                .putString(REGIONID, regionId)
+                .apply();
+
+        Matrix.initI18N(this, mainDomain, mainDomainId, router, gateway, redirect, regionId);
+
     }
 
     public void cleanCache() {
