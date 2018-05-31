@@ -84,8 +84,7 @@ repositories {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
-    compile(name: 'ablecloud-matrix-app-sdk-V2.1.1-9-g76f82ee-release', ext: 'aar')
-    compile(name: 'ablecloud-matrix-local-sdk-V2.1.1-9-g76f82ee-release', ext: 'aar')
+
 
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
@@ -96,6 +95,8 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
 
+    compile(name: 'ablecloud-matrix-app-sdk-V2.1.1-9-g76f82ee-release', ext: 'aar')
+    compile(name: 'ablecloud-matrix-local-sdk-V2.1.1-13-g174a847-release', ext: 'aar')
     compile 'io.reactivex.rxjava2:rxjava:2.0.7'
     compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
 

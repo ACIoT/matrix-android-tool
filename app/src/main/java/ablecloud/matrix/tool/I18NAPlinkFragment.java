@@ -242,7 +242,6 @@ public class I18NAPlinkFragment extends Fragment {
                     public void accept(@NonNull LocalDevice sLocalDevice) throws Exception {
                         mSLocalDevice = sLocalDevice;
                         UiUtils.toast(getActivity(), getString(R.string.send_success) + "/n" + "physicalId:" + sLocalDevice.physicalDeviceId);
-                        getActivity().finish();
                     }
                 }, new Consumer<Throwable>() {
                     @Override

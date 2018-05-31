@@ -31,14 +31,13 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnItemSelected;
 import butterknife.Unbinder;
-import io.reactivex.Observable;
+import io.reactivex.Single;
+import io.reactivex.SingleEmitter;
+import io.reactivex.SingleOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subjects.PublishSubject;
 
 /**
  * Created by wangkun on 17/08/2017.
@@ -113,59 +112,50 @@ public class I18NAblelinkFragment extends Fragment {
     @OnClick(R.id.start_link)
     public void onClick(View v) {
         final int timeout_ms = (int) TimeUnit.MINUTES.toMillis(1);
-        final PublishSubject<LocalDevice> subject = PublishSubject.create();
 
-        Observable<LocalDevice> deviceObservable = subject.doOnSubscribe(new Consumer<Disposable>() {
+
+        Disposable subscribe = Single.create(new SingleOnSubscribe<LocalDevice>() {
             @Override
-            public void accept(@NonNull Disposable disposable) throws Exception {
-
+            public void subscribe(final SingleEmitter<LocalDevice> e) throws Exception {
                 MatrixLocal.smartModeNetConfigManager().configNetType(mCheckBox.isChecked() ? SmartModeNetConfigManager.NET.LOCAL : SmartModeNetConfigManager.NET.CLOUD).startAblelink(deviceType, NetworkUtils.getSSID(getActivity()), password.getText().toString(), timeout_ms, new MatrixCallback<LocalDevice>() {
                     @Override
                     public void success(LocalDevice localDevice) {
-                        subject.onNext(localDevice);
-                        subject.onComplete();
+                        e.onSuccess(localDevice);
                     }
 
                     @Override
                     public void error(MatrixError matrixError) {
-                        subject.onError(matrixError);
+                        e.onError(matrixError);
                     }
                 });
             }
-        }).doFinally(new Action() {
-            @Override
-            public void run() throws Exception {
-                MatrixLocal.smartModeNetConfigManager().stopAbleLink();
-            }
-        }).subscribeOn(Schedulers.io());
-
-
-        deviceObservable.observeOn(AndroidSchedulers.mainThread()).doOnSubscribe(new Consumer<Disposable>() {
-            @Override
-            public void accept(@NonNull Disposable disposable) throws Exception {
-                progressSnack.show();
-            }
-        }).doFinally(new Action() {
-            @Override
-            public void run() throws Exception {
-                progressSnack.dismiss();
-            }
-        }).subscribe(new Consumer<LocalDevice>() {
-            @Override
-            public void accept(@NonNull LocalDevice localDevice) throws Exception {
-                if (log != null) {
-                    log.append(log.length() > 0 ? "\n---\n" : "");
-                    log.append("ip: " + localDevice.ipAddress + ", physicalDeviceId: " + localDevice.physicalDeviceId + "\n");
-                }
-            }
-        }, new Consumer<Throwable>() {
-            @Override
-            public void accept(@NonNull Throwable throwable) throws Exception {
-                if (log != null) {
-                    log.append(log.length() > 0 ? "\n---\n" : "");
-                    log.append("Ablelink error: " + throwable.getMessage());
-                }
-            }
-        });
+        }).subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe(new Consumer<Disposable>() {
+                    @Override
+                    public void accept(Disposable disposable) throws Exception {
+                        progressSnack.show();
+                    }
+                })
+                .timeout(60, TimeUnit.SECONDS)
+                .subscribe(new Consumer<LocalDevice>() {
+                    @Override
+                    public void accept(LocalDevice localDevice) throws Exception {
+                        progressSnack.dismiss();
+                        if (log != null) {
+                            log.append(log.length() > 0 ? "\n---\n" : "");
+                            log.append("ip: " + localDevice.ipAddress + ", physicalDeviceId: " + localDevice.physicalDeviceId + "\n");
+                        }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        progressSnack.dismiss();
+                        if (log != null) {
+                            log.append(log.length() > 0 ? "\n---\n" : "");
+                            log.append("Ablelink error: " + throwable.getMessage());
+                        }
+                    }
+                });
     }
 }
