@@ -18,6 +18,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import io.reactivex.Completable;
+import io.reactivex.CompletableEmitter;
+import io.reactivex.CompletableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by liuxiaofeng on 2017/10/30.
@@ -68,43 +75,80 @@ public class SignUpFragment extends Fragment {
     }
 
     private void fetchVerCode() {
-        String phone = this.phone.getText().toString().trim();
+        final String phone = this.phone.getText().toString().trim();
         if (TextUtils.isEmpty(phone)) {
             UiUtils.toast(getActivity(), getString(R.string.type_your_phone));
             return;
         }
-        ablecloud.matrix.app.Matrix.accountManager().requireVerifyCode(phone, 0, new MatrixCallback<Void>() {
+        Completable.create(new CompletableOnSubscribe() {
             @Override
-            public void success(Void aVoid) {
-                UiUtils.toast(getActivity(), getString(R.string.ver_code_sent));
-            }
+            public void subscribe(final CompletableEmitter e) throws Exception {
+                ablecloud.matrix.app.Matrix.accountManager().requireVerifyCode(phone, 0, new MatrixCallback<Void>() {
+                    @Override
+                    public void success(Void aVoid) {
+                        e.onComplete();
+                    }
 
-            @Override
-            public void error(MatrixError matrixError) {
-                UiUtils.toast(getActivity(), matrixError.toString());
+                    @Override
+                    public void error(MatrixError matrixError) {
+                        e.onError(matrixError);
+                    }
+                });
             }
-        });
+        }).subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        UiUtils.toast(getActivity(), getString(R.string.ver_code_sent));
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        UiUtils.toast(getActivity(), throwable.toString());
+                    }
+                });
+
     }
 
     private void signUp() {
-        String phone = this.phone.getText().toString().trim();
-        String verCode = verifyCode.getText().toString().trim();
-        String password = this.password.getText().toString().trim();
+        final String phone = this.phone.getText().toString().trim();
+        final String verCode = verifyCode.getText().toString().trim();
+        final String password = this.password.getText().toString().trim();
         if (TextUtils.isEmpty(phone) || TextUtils.isEmpty(verCode) || TextUtils.isEmpty(password)) {
             UiUtils.toast(getActivity(), getString(R.string.sign_up_check_tips));
             return;
         }
-        ablecloud.matrix.app.Matrix.accountManager().register(phone, "", password, verCode, "", new MatrixCallback<User>() {
-            @Override
-            public void success(User user) {
-                UiUtils.toast(getActivity(), getString(R.string.sign_up_done));
-                getActivity().finish();
-            }
 
+        Completable.create(new CompletableOnSubscribe() {
             @Override
-            public void error(MatrixError matrixError) {
-                UiUtils.toast(getActivity(), matrixError.toString());
+            public void subscribe(final CompletableEmitter e) throws Exception {
+                ablecloud.matrix.app.Matrix.accountManager().register(phone, "", password, verCode, "", new MatrixCallback<User>() {
+                    @Override
+                    public void success(User user) {
+                        e.onComplete();
+                    }
+
+                    @Override
+                    public void error(MatrixError matrixError) {
+                        e.onError(matrixError);
+                    }
+                });
             }
-        });
+        }).subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        UiUtils.toast(getActivity(), getString(R.string.sign_up_done));
+                        getActivity().finish();
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        UiUtils.toast(getActivity(), throwable.toString());
+                    }
+                });
+
     }
 }

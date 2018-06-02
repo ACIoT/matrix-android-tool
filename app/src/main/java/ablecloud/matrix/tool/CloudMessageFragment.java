@@ -26,9 +26,12 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
 import io.reactivex.Single;
+import io.reactivex.SingleEmitter;
+import io.reactivex.SingleOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 import okio.ByteString;
 
 /**
@@ -85,11 +88,28 @@ public class CloudMessageFragment extends DeviceFragment {
             Toast.makeText(getActivity(), "msgCode和payload均不能为空", Toast.LENGTH_SHORT).show();
             return;
         }
-        Matrix.bindManager()
-                .sendDevice(device.subDomainName, device.physicalDeviceId, BindManager.Mode.CLOUD_ONLY, new MatrixMessage(Integer.parseInt(this.msgCode.getText().toString().trim()), ByteString.decodeHex(requestMessage).toByteArray()), new MatrixCallback<MatrixMessage>() {
+        Single.create(new SingleOnSubscribe<MatrixMessage>() {
+            @Override
+            public void subscribe(SingleEmitter<MatrixMessage> e) throws Exception {
+                Matrix.bindManager()
+                        .sendDevice(device.subDomainName, device.physicalDeviceId, BindManager.Mode.CLOUD_ONLY, new MatrixMessage(Integer.parseInt(CloudMessageFragment.this.msgCode.getText().toString().trim()), ByteString.decodeHex(requestMessage).toByteArray()), new MatrixCallback<MatrixMessage>() {
+                            @Override
+                            public void success(MatrixMessage deviceMessage) {
+
+                            }
+
+                            @Override
+                            public void error(MatrixError matrixError) {
+
+                            }
+                        });
+            }
+        }).subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<MatrixMessage>() {
                     @Override
-                    public void success(MatrixMessage deviceMessage) {
-                        Single.just(deviceMessage.getContent()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<byte[]>() {
+                    public void accept(MatrixMessage matrixMessage) throws Exception {
+                        Single.just(matrixMessage.getContent()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<byte[]>() {
                             @Override
                             public void accept(@NonNull byte[] bytes) throws Exception {
                                 log.append(log.length() > 0 ? "\n---\n" : "");
@@ -98,17 +118,22 @@ public class CloudMessageFragment extends DeviceFragment {
                             }
                         });
                     }
-
+                }, new Consumer<Throwable>() {
                     @Override
-                    public void error(MatrixError matrixError) {
-                        Single.just(matrixError).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<MatrixError>() {
-                            @Override
-                            public void accept(@NonNull MatrixError matrixError) throws Exception {
-                                Toast.makeText(getActivity(), matrixError.getMessage(), Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                    public void accept(Throwable throwable) throws Exception {
+                        if (throwable instanceof MatrixError) {
+                            MatrixError matrixError = (MatrixError) throwable;
+
+                            Single.just(matrixError).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<MatrixError>() {
+                                @Override
+                                public void accept(@NonNull MatrixError matrixError) throws Exception {
+                                    Toast.makeText(getActivity(), matrixError.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
                     }
                 });
+
     }
 
     private String formatTime(long time) {

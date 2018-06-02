@@ -1,5 +1,6 @@
 package ablecloud.matrix.tool;
 
+import android.Manifest;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,12 +14,16 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import com.tbruyelle.rxpermissions2.RxPermissions;
+
 import ablecloud.matrix.service.MatrixConfiguration;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnItemSelected;
 import butterknife.Unbinder;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.Consumer;
 
 /**
  * Created by wangkun on 30/09/2017.
@@ -41,6 +46,15 @@ public class WelcomeActivity extends ContainerActivity {
             finish();
             return;
         }
+
+        new RxPermissions(this)
+                .request(Manifest.permission.WRITE_EXTERNAL_STORAGE
+                        , Manifest.permission.READ_EXTERNAL_STORAGE)
+                .subscribe(new Consumer<Boolean>() {
+                    @Override
+                    public void accept(@NonNull Boolean aBoolean) throws Exception {
+                    }
+                });
 
         tablayout = ButterKnife.findById(this, R.id.tablayout);
         tablayout.addTab(tablayout.newTab().setText(R.string.public_service));
@@ -135,6 +149,8 @@ public class WelcomeActivity extends ContainerActivity {
             modeSpinner.setSelection(1);
             regionSpinner.setAdapter(regionAdapter);
             regionSpinner.setSelection(1);
+
+
             return view;
         }
 

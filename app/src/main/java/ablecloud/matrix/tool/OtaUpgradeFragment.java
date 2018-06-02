@@ -19,8 +19,15 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.reactivex.Completable;
+import io.reactivex.CompletableEmitter;
+import io.reactivex.CompletableOnSubscribe;
+import io.reactivex.Single;
+import io.reactivex.SingleEmitter;
+import io.reactivex.SingleOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by wangkun on 04/08/2017.
@@ -65,47 +72,83 @@ public class OtaUpgradeFragment extends DeviceFragment {
     }
 
     private void checkVersion(final int otaType) {
-        VersionQuery versionRequest = new VersionQuery(device.subDomainName, otaType);
+        final VersionQuery versionRequest = new VersionQuery(device.subDomainName, otaType);
         log("checkVersion: " + device.physicalDeviceId);
-        Matrix.otaManager().checkVersion(versionRequest, new MatrixCallback<VersionResponse>() {
+        Single.create(new SingleOnSubscribe<VersionResponse>() {
             @Override
-            public void success(VersionResponse versionResponse) {
-                String type = otaType == VersionQuery.TYPE_MCU ? "MCU" : "WIFI";
-                final StringBuilder builder = new StringBuilder();
-                builder.append("OTA type: " + type + ", ");
-                boolean hasUpgrade = versionResponse.hasUpgrade();
-                builder.append("hasUpgrade: " + hasUpgrade + "\n");
-                builder.append("current: " + versionResponse.currentVersion);
-                if (hasUpgrade) {
-                    targetVersion = versionResponse.targetVersion;
-                    builder.append(", target: " + targetVersion);
-                } else {
-                    targetVersion = null;
-                }
-                log(builder.toString());
-            }
+            public void subscribe(final SingleEmitter<VersionResponse> e) throws Exception {
+                Matrix.otaManager().checkVersion(versionRequest, new MatrixCallback<VersionResponse>() {
+                    @Override
+                    public void success(VersionResponse versionResponse) {
+                        e.onSuccess(versionResponse);
+                    }
 
-            @Override
-            public void error(final MatrixError matrixError) {
-                UiUtils.toast(getActivity(), matrixError.getMessage());
+                    @Override
+                    public void error(final MatrixError matrixError) {
+                        e.onError(matrixError);
+                    }
+                });
             }
-        });
+        }).subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<VersionResponse>() {
+                    @Override
+                    public void accept(VersionResponse versionResponse) throws Exception {
+                        String type = otaType == VersionQuery.TYPE_MCU ? "MCU" : "WIFI";
+                        final StringBuilder builder = new StringBuilder();
+                        builder.append("OTA type: " + type + ", ");
+                        boolean hasUpgrade = versionResponse.hasUpgrade();
+                        builder.append("hasUpgrade: " + hasUpgrade + "\n");
+                        builder.append("current: " + versionResponse.currentVersion);
+                        if (hasUpgrade) {
+                            targetVersion = versionResponse.targetVersion;
+                            builder.append(", target: " + targetVersion);
+                        } else {
+                            targetVersion = null;
+                        }
+                        log(builder.toString());
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        UiUtils.toast(getActivity(), throwable.getMessage());
+                    }
+                });
+
     }
 
     private void confirmUpgrade(int otaType) {
-        UpgradeRequest upgradeRequest = new UpgradeRequest(device.subDomainName, device.deviceId, targetVersion, otaType);
+        final UpgradeRequest upgradeRequest = new UpgradeRequest(device.subDomainName, device.deviceId, targetVersion, otaType);
         log("confirmUpgrade: " + device.physicalDeviceId + ", targetVersion: " + targetVersion);
-        Matrix.otaManager().confirmUpgrade(upgradeRequest, new MatrixCallback<Void>() {
+        Completable.create(new CompletableOnSubscribe() {
             @Override
-            public void success(Void aVoid) {
-                UiUtils.toast(getActivity(), "confirmUpgrade success");
-            }
+            public void subscribe(final CompletableEmitter e) throws Exception {
+                Matrix.otaManager().confirmUpgrade(upgradeRequest, new MatrixCallback<Void>() {
+                    @Override
+                    public void success(Void aVoid) {
+                        e.onComplete();
+                    }
 
-            @Override
-            public void error(MatrixError matrixError) {
-                UiUtils.toast(getActivity(), "confirmUpgrade error: " + matrixError.getMessage());
+                    @Override
+                    public void error(MatrixError matrixError) {
+                        e.onError(matrixError);
+                    }
+                });
             }
-        });
+        }).subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        UiUtils.toast(getActivity(), "confirmUpgrade success");
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        UiUtils.toast(getActivity(), "confirmUpgrade error: " + throwable.getMessage());
+                    }
+                });
+
     }
 
     private void log(final String string) {

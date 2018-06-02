@@ -18,6 +18,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import io.reactivex.Completable;
+import io.reactivex.CompletableEmitter;
+import io.reactivex.CompletableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by liuxiaofeng on 12/08/2017.
@@ -60,17 +67,35 @@ public class DeviceBindFragment extends Fragment {
 
     @OnClick(R.id.bind)
     public void onViewClicked() {
-        Matrix.bindManager().bindDevice(subDomain.getText().toString(), physicalId.getText().toString(), devieName.getText().toString(), new MatrixCallback<Device>() {
+        Completable.create(new CompletableOnSubscribe() {
             @Override
-            public void success(Device device) {
-                UiUtils.toast(getActivity(), "bindDevice success");
-                getActivity().finish();
-            }
+            public void subscribe(final CompletableEmitter e) throws Exception {
+                Matrix.bindManager().bindDevice(subDomain.getText().toString(), physicalId.getText().toString(), devieName.getText().toString(), new MatrixCallback<Device>() {
+                    @Override
+                    public void success(Device device) {
+                        e.onComplete();
+                    }
 
-            @Override
-            public void error(MatrixError matrixError) {
-                UiUtils.toast(getActivity(), matrixError.toString());
+                    @Override
+                    public void error(MatrixError matrixError) {
+                        e.onError(matrixError);
+                    }
+                });
             }
-        });
+        }).subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        UiUtils.toast(getActivity(), "bindDevice success");
+                        getActivity().finish();
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        UiUtils.toast(getActivity(), throwable.toString());
+                    }
+                });
+
     }
 }

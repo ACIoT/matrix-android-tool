@@ -11,6 +11,12 @@ import ablecloud.matrix.MatrixCallback;
 import ablecloud.matrix.MatrixError;
 import ablecloud.matrix.app.Matrix;
 import ablecloud.matrix.model.Device;
+import io.reactivex.Single;
+import io.reactivex.SingleEmitter;
+import io.reactivex.SingleOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by wangkun on 04/08/2017.
@@ -39,19 +45,37 @@ public class DeviceManager {
     }
 
     public static void updateDevices() {
-        Matrix.bindManager().listDevices(new MatrixCallback<List<Device>>() {
+        Single.create(new SingleOnSubscribe<List<Device>>() {
             @Override
-            public void success(List<Device> devices) {
-                instance().devices.clear();
-                instance().devices.addAll(devices);
-                instance().dataSetObservable.notifyChanged();
-            }
+            public void subscribe(final SingleEmitter<List<Device>> e) throws Exception {
+                Matrix.bindManager().listDevices(new MatrixCallback<List<Device>>() {
+                    @Override
+                    public void success(List<Device> devices) {
+                        e.onSuccess(devices);
+                    }
 
-            @Override
-            public void error(MatrixError matrixError) {
-                Log.d(TAG, "listDevices error: " + matrixError.getMessage());
+                    @Override
+                    public void error(MatrixError matrixError) {
+                        e.onError(matrixError);
+                    }
+                });
             }
-        });
+        }).subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<List<Device>>() {
+                    @Override
+                    public void accept(List<Device> devices) throws Exception {
+                        instance().devices.clear();
+                        instance().devices.addAll(devices);
+                        instance().dataSetObservable.notifyChanged();
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        Log.d(TAG, "listDevices error: " + throwable.getMessage());
+                    }
+                });
+
     }
 
     public static void registerDataSetObserver(DataSetObserver observer) {
