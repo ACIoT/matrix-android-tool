@@ -72,7 +72,12 @@ public class OtaUpgradeFragment extends DeviceFragment {
     }
 
     private void checkVersion(final int otaType) {
+        if (device ==null){
+            UiUtils.toast(getActivity(),"devce is null");
+            return;
+        }
         final VersionQuery versionRequest = new VersionQuery(device.subDomainName, otaType);
+        versionRequest.setDeviceId(device.deviceId);
         log("checkVersion: " + device.physicalDeviceId);
         Single.create(new SingleOnSubscribe<VersionResponse>() {
             @Override
@@ -118,6 +123,10 @@ public class OtaUpgradeFragment extends DeviceFragment {
     }
 
     private void confirmUpgrade(int otaType) {
+        if (device ==null){
+            UiUtils.toast(getActivity(),"devce is null");
+            return;
+        }
         final UpgradeRequest upgradeRequest = new UpgradeRequest(device.subDomainName, device.deviceId, targetVersion, otaType);
         log("confirmUpgrade: " + device.physicalDeviceId + ", targetVersion: " + targetVersion);
         Completable.create(new CompletableOnSubscribe() {

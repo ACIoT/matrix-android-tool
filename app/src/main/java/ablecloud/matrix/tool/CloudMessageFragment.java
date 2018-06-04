@@ -90,17 +90,17 @@ public class CloudMessageFragment extends DeviceFragment {
         }
         Single.create(new SingleOnSubscribe<MatrixMessage>() {
             @Override
-            public void subscribe(SingleEmitter<MatrixMessage> e) throws Exception {
+            public void subscribe(final SingleEmitter<MatrixMessage> e) throws Exception {
                 Matrix.bindManager()
                         .sendDevice(device.subDomainName, device.physicalDeviceId, BindManager.Mode.CLOUD_ONLY, new MatrixMessage(Integer.parseInt(CloudMessageFragment.this.msgCode.getText().toString().trim()), ByteString.decodeHex(requestMessage).toByteArray()), new MatrixCallback<MatrixMessage>() {
                             @Override
                             public void success(MatrixMessage deviceMessage) {
-
+                                e.onSuccess(deviceMessage);
                             }
 
                             @Override
                             public void error(MatrixError matrixError) {
-
+                                e.onError(matrixError);
                             }
                         });
             }

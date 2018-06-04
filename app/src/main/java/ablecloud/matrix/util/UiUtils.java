@@ -23,6 +23,7 @@ public class UiUtils {
         Completable.complete().observeOn(AndroidSchedulers.mainThread()).subscribe(new Action() {
             @Override
             public void run() throws Exception {
+                if (context == null) return;
                 Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
             }
         });
